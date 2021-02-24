@@ -1,9 +1,9 @@
-# Copyright 2020 Binovo IT Human Project SL
+# Copyright 2021 Binovo IT Human Project SL
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 from datetime import date
 from odoo.tests import common
 from .common import TestL10nEsTicketBAI
-from ..ticketbai.xml_schema import XMLSchema
+from odoo.addons.l10n_es_ticketbai_api.ticketbai.xml_schema import XMLSchema
 
 
 @common.at_install(False)
@@ -14,8 +14,8 @@ class TestL10nEsTicketBAICustomerInvoice(TestL10nEsTicketBAI):
         super().setUp()
 
     def test_invoice(self):
-        invoice = self.create_draft_invoice(self.account_billing.id,
-                                            self.fiscal_position_national)
+        invoice = self.create_draft_invoice(
+            self.account_billing.id, self.fiscal_position_national)
         invoice.onchange_fiscal_position_id_tbai_vat_regime_key()
         invoice.compute_taxes()
         invoice.action_invoice_open()
@@ -23,13 +23,13 @@ class TestL10nEsTicketBAICustomerInvoice(TestL10nEsTicketBAI):
         self.assertEqual(1, len(invoice.tbai_invoice_ids))
         root, signature_value = \
             invoice.sudo().tbai_invoice_ids.get_tbai_xml_signed_and_signature_value()
-        res = XMLSchema.xml_is_valid(self.test_xml_customer_invoice_schema_doc, root)
+        res = XMLSchema.xml_is_valid(self.test_xml_invoice_schema_doc, root)
         self.assertTrue(res)
 
     def test_invoice_foreign_customer_extracommunity(self):
-        invoice = self.create_draft_invoice(self.account_billing.id,
-                                            self.fiscal_position_e)
-        invoice.partner_id = self.customer_extracommunity.id
+        invoice = self.create_draft_invoice(
+            self.account_billing.id, self.fiscal_position_e)
+        invoice.partner_id = self.partner_extracommunity.id
         invoice.onchange_fiscal_position_id_tbai_vat_regime_key()
         invoice.compute_taxes()
         # Artículo 21.- Exenciones en las exportaciones de bienes
@@ -45,13 +45,13 @@ class TestL10nEsTicketBAICustomerInvoice(TestL10nEsTicketBAI):
         self.assertEqual(1, len(invoice.tbai_invoice_ids))
         root, signature_value = \
             invoice.sudo().tbai_invoice_ids.get_tbai_xml_signed_and_signature_value()
-        res = XMLSchema.xml_is_valid(self.test_xml_customer_invoice_schema_doc, root)
+        res = XMLSchema.xml_is_valid(self.test_xml_invoice_schema_doc, root)
         self.assertTrue(res)
 
     def test_invoice_foreign_customer_intracommunity(self):
-        invoice = self.create_draft_invoice(self.account_billing.id,
-                                            self.fiscal_position_ic)
-        invoice.partner_id = self.customer_intracommunity.id
+        invoice = self.create_draft_invoice(
+            self.account_billing.id, self.fiscal_position_ic)
+        invoice.partner_id = self.partner_intracommunity.id
         invoice.onchange_fiscal_position_id_tbai_vat_regime_key()
         invoice.compute_taxes()
         # Artículo 25.- Exenciones en las entregas de bienes destinados a otro Estado
@@ -64,12 +64,12 @@ class TestL10nEsTicketBAICustomerInvoice(TestL10nEsTicketBAI):
         self.assertEqual(1, len(invoice.tbai_invoice_ids))
         root, signature_value = \
             invoice.sudo().tbai_invoice_ids.get_tbai_xml_signed_and_signature_value()
-        res = XMLSchema.xml_is_valid(self.test_xml_customer_invoice_schema_doc, root)
+        res = XMLSchema.xml_is_valid(self.test_xml_invoice_schema_doc, root)
         self.assertTrue(res)
 
     def test_invoice_irpf_taxes(self):
-        invoice = self.create_draft_invoice(self.account_billing.id,
-                                            self.fiscal_position_irpf15)
+        invoice = self.create_draft_invoice(
+            self.account_billing.id, self.fiscal_position_irpf15)
         invoice.onchange_fiscal_position_id_tbai_vat_regime_key()
         invoice.compute_taxes()
         invoice.action_invoice_open()
@@ -77,12 +77,12 @@ class TestL10nEsTicketBAICustomerInvoice(TestL10nEsTicketBAI):
         self.assertEqual(1, len(invoice.tbai_invoice_ids))
         root, signature_value = \
             invoice.sudo().tbai_invoice_ids.get_tbai_xml_signed_and_signature_value()
-        res = XMLSchema.xml_is_valid(self.test_xml_customer_invoice_schema_doc, root)
+        res = XMLSchema.xml_is_valid(self.test_xml_invoice_schema_doc, root)
         self.assertTrue(res)
 
     def test_invoice_equivalence_surcharge_taxes(self):
-        invoice = self.create_draft_invoice(self.account_billing.id,
-                                            self.fiscal_position_surcharge)
+        invoice = self.create_draft_invoice(
+            self.account_billing.id, self.fiscal_position_surcharge)
         invoice.onchange_fiscal_position_id_tbai_vat_regime_key()
         invoice.compute_taxes()
         invoice.action_invoice_open()
@@ -90,12 +90,12 @@ class TestL10nEsTicketBAICustomerInvoice(TestL10nEsTicketBAI):
         self.assertEqual(1, len(invoice.tbai_invoice_ids))
         root, signature_value = \
             invoice.sudo().tbai_invoice_ids.get_tbai_xml_signed_and_signature_value()
-        res = XMLSchema.xml_is_valid(self.test_xml_customer_invoice_schema_doc, root)
+        res = XMLSchema.xml_is_valid(self.test_xml_invoice_schema_doc, root)
         self.assertTrue(res)
 
     def test_out_refund_refund(self):
-        invoice = self.create_draft_invoice(self.account_billing.id,
-                                            self.fiscal_position_national)
+        invoice = self.create_draft_invoice(
+            self.account_billing.id, self.fiscal_position_national)
         invoice.onchange_fiscal_position_id_tbai_vat_regime_key()
         invoice.compute_taxes()
         invoice.action_invoice_open()
@@ -103,7 +103,7 @@ class TestL10nEsTicketBAICustomerInvoice(TestL10nEsTicketBAI):
         self.assertEqual(1, len(invoice.tbai_invoice_ids))
         root, signature_value = \
             invoice.sudo().tbai_invoice_ids.get_tbai_xml_signed_and_signature_value()
-        res = XMLSchema.xml_is_valid(self.test_xml_customer_invoice_schema_doc, root)
+        res = XMLSchema.xml_is_valid(self.test_xml_invoice_schema_doc, root)
         self.assertTrue(res)
         # Create an invoice refund by differences
         account_invoice_refund = \
@@ -126,14 +126,14 @@ class TestL10nEsTicketBAICustomerInvoice(TestL10nEsTicketBAI):
         self.assertEqual(1, len(refund.tbai_invoice_ids))
         r_root, r_signature_value = \
             refund.sudo().tbai_invoice_ids.get_tbai_xml_signed_and_signature_value()
-        r_res = XMLSchema.xml_is_valid(self.test_xml_customer_invoice_schema_doc,
-                                       r_root)
+        r_res = XMLSchema.xml_is_valid(
+            self.test_xml_invoice_schema_doc, r_root)
         self.assertTrue(r_res)
 
     def test_out_refund_refund_not_sent_invoice(self):
         self.main_company.tbai_enabled = False
-        invoice = self.create_draft_invoice(self.account_billing.id,
-                                            self.fiscal_position_national)
+        invoice = self.create_draft_invoice(
+            self.account_billing.id, self.fiscal_position_national)
         invoice.onchange_fiscal_position_id_tbai_vat_regime_key()
         invoice.compute_taxes()
         invoice.action_invoice_open()
@@ -161,8 +161,8 @@ class TestL10nEsTicketBAICustomerInvoice(TestL10nEsTicketBAI):
         self.assertEqual(0, len(refund.tbai_invoice_ids))
 
     def test_out_refund_modify(self):
-        invoice = self.create_draft_invoice(self.account_billing.id,
-                                            self.fiscal_position_national)
+        invoice = self.create_draft_invoice(
+            self.account_billing.id, self.fiscal_position_national)
         invoice.origin = 'TBAI-REFUND-MODIFY-TEST'
         invoice.onchange_fiscal_position_id_tbai_vat_regime_key()
         invoice.compute_taxes()
@@ -171,7 +171,7 @@ class TestL10nEsTicketBAICustomerInvoice(TestL10nEsTicketBAI):
         self.assertEqual(1, len(invoice.tbai_invoice_ids))
         root, signature_value = \
             invoice.sudo().tbai_invoice_ids.get_tbai_xml_signed_and_signature_value()
-        res = XMLSchema.xml_is_valid(self.test_xml_customer_invoice_schema_doc, root)
+        res = XMLSchema.xml_is_valid(self.test_xml_invoice_schema_doc, root)
         self.assertTrue(res)
         # Create an invoice refund by substitution
         account_invoice_refund = \
@@ -201,12 +201,12 @@ class TestL10nEsTicketBAICustomerInvoice(TestL10nEsTicketBAI):
         invs = substitute_invoice.sudo().tbai_invoice_ids
         r_root, r_signature_value = invs.get_tbai_xml_signed_and_signature_value()
         r_res = XMLSchema.xml_is_valid(
-            self.test_xml_customer_invoice_schema_doc, r_root)
+            self.test_xml_invoice_schema_doc, r_root)
         self.assertTrue(r_res)
 
     def test_out_refund_cancel(self):
-        invoice = self.create_draft_invoice(self.account_billing.id,
-                                            self.fiscal_position_national)
+        invoice = self.create_draft_invoice(
+            self.account_billing.id, self.fiscal_position_national)
         invoice.onchange_fiscal_position_id_tbai_vat_regime_key()
         invoice.compute_taxes()
         invoice.action_invoice_open()
@@ -214,7 +214,7 @@ class TestL10nEsTicketBAICustomerInvoice(TestL10nEsTicketBAI):
         self.assertEqual(1, len(invoice.tbai_invoice_ids))
         root, signature_value = \
             invoice.sudo().tbai_invoice_ids.get_tbai_xml_signed_and_signature_value()
-        res = XMLSchema.xml_is_valid(self.test_xml_customer_invoice_schema_doc, root)
+        res = XMLSchema.xml_is_valid(self.test_xml_invoice_schema_doc, root)
         self.assertTrue(res)
         # Create an invoice refund by substitution
         account_invoice_refund = \
@@ -235,6 +235,6 @@ class TestL10nEsTicketBAICustomerInvoice(TestL10nEsTicketBAI):
         self.assertEqual(1, len(refund.tbai_invoice_ids))
         r_root, r_signature_value = \
             refund.sudo().tbai_invoice_ids.get_tbai_xml_signed_and_signature_value()
-        r_res = XMLSchema.xml_is_valid(self.test_xml_customer_invoice_schema_doc,
-                                       r_root)
+        r_res = XMLSchema.xml_is_valid(
+            self.test_xml_invoice_schema_doc, r_root)
         self.assertTrue(r_res)

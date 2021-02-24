@@ -1,16 +1,14 @@
-# Copyright 2020 Binovo IT Human Project SL
+# Copyright 2021 Binovo IT Human Project SL
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import os
 from datetime import date
-from lxml import etree
-from urllib.request import pathname2url
-from ..ticketbai.xml_schema import XMLSchema
+from odoo.addons.l10n_es_ticketbai_api.tests.common import TestL10nEsTicketBAIAPI
 from odoo.tests import common
 
 
 @common.at_install(False)
 @common.post_install(True)
-class TestL10nEsTicketBAI(common.TransactionCase):
+class TestL10nEsTicketBAI(TestL10nEsTicketBAIAPI):
 
     def create_account_billing(self):
         return self.env['res.users'].with_context({'no_reset_password': True}).create({
@@ -34,7 +32,7 @@ class TestL10nEsTicketBAI(common.TransactionCase):
 
     def create_draft_invoice(self, uid, fp):
         invoice = self.env['account.invoice'].sudo(uid).create({
-            'partner_id': self.customer.id,
+            'partner_id': self.partner.id,
             'currency_id': self.env.ref('base.EUR').id,
             'name': 'TBAI Invoice Test',
             'account_id': self.account_receivable.id,
@@ -92,41 +90,8 @@ class TestL10nEsTicketBAI(common.TransactionCase):
 
     def setUp(self):
         super().setUp()
-        schemas_version_dirname = XMLSchema.schemas_version_dirname
-        script_dirpath = os.path.abspath(os.path.dirname(__file__))
-        schemas_dirpath = os.path.join(script_dirpath, '../ticketbai/schemas')
-        url = pathname2url(os.path.join(schemas_dirpath, 'catalog.xml'))
-        catalog_path = "file:%s" % url
-        os.environ['XML_CATALOG_FILES'] = catalog_path
-        # Load XSD file with XADES imports
-        test_xml_customer_invoice_filepath = os.path.abspath(
-            os.path.join(schemas_dirpath,
-                         '%s/test_ticketBai V1-2.xsd' % schemas_version_dirname))
-        self.test_xml_customer_invoice_schema_doc = etree.parse(
-            test_xml_customer_invoice_filepath, parser=etree.ETCompatXMLParser())
-        # Load XSD file with XADES imports
-        test_xml_customer_cancellation_filepath = os.path.abspath(os.path.join(
-            schemas_dirpath,
-            '%s/test_Anula_ticketBai V1-2.xsd' % schemas_version_dirname))
-        self.test_xml_customer_cancellation_schema_doc = etree.parse(
-            test_xml_customer_cancellation_filepath, parser=etree.ETCompatXMLParser())
-        self.main_company = self.env.ref('base.main_company')
-        self.main_company.tbai_enabled = True
-        self.main_company.tbai_tax_agency_id = self.env.ref(
-            'l10n_es_ticketbai.tbai_tax_agency_gipuzkoa').id
-        self.main_company.currency_id = self.env.ref('base.EUR').id
-        self.main_company.partner_id.vat = 'ES12345678Z'
-        self.main_company.tbai_license_key = 'TEST-LICENSE-001'
-        self.main_company.tbai_software_name = 'Odoo'
-        self.main_company.tbai_device_serial_number = 'TEST-DEVICE-001'
-        self.main_company.tbai_developer_id = self.env.ref(
-            "l10n_es_ticketbai.res_partner_binovo").id
         aeat_certificate = self.create_aeat_certificate()
-        self.main_company.tbai_certificate_id = aeat_certificate.id
-        self.customer = self.env.ref("l10n_es_ticketbai.res_partner_binovo")
-        self.customer_extracommunity = self.env.ref(
-            'l10n_es_ticketbai.res_partner_yamaha_jp')
-        self.customer_intracommunity = self.env.ref('l10n_es_ticketbai.res_partner_oca')
+        self.main_company.tbai_aeat_certificate_id = aeat_certificate.id
         self.product_delivery = self.env.ref('product.product_delivery_01')
         self.product_service = self.env.ref('product.product_product_6c')
         self.group_user = self.env.ref('base.group_user')  # Employee

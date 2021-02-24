@@ -16,7 +16,7 @@ TicketBAI (API) - Gobierno Vasco
 
 Módulo base (API) para la declaración de todas las operaciones de venta realizadas por las personas y entidades
 que desarrollan actividades económicas
-https://www.gipuzkoa.eus/documents/2456431/12093238/TicketBAI_Especificaciones_v_1_0.pdf/81aa2a72-2e5a-b0b5-e990-eb3a307c72bb
+https://www.euskadi.eus/contenidos/informacion/ticketbai/es_14815/adjuntos/TicketBAI_Especificaciones_v_1_1.pdf
 
 **Table of contents**
 
