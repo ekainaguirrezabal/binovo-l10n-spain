@@ -1,4 +1,4 @@
-# Copyright 2020 Binovo IT Human Project SL
+# Copyright 2021 Binovo IT Human Project SL
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 from odoo import api, models, fields
 
@@ -53,13 +53,3 @@ class TicketBAIVATRegimeKey(models.Model):
             name = '[{}]-{}'.format(record.code, record.name)
             vals.append(tuple([record.id, name]))
         return vals
-
-    def tbai_get_value_clave_regimen_iva_op_trascendencia(self):
-        """ V 1.1
-        <element  name="ClaveRegimenIvaOpTrascendencia"
-        type="T:IdOperacionesTrascendenciaTributariaType"/>
-            <enumeration value="01" >
-            ...
-        :return: TicketBAI VAT Regime Key
-        """
-        return self.code

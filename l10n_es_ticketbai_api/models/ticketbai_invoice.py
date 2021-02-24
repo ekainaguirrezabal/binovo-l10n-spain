@@ -29,13 +29,6 @@ class TicketBaiQRParams(tbai_utils.EnumValues):
     invoice_total_amount = 'i'
 
 
-class TicketBaiIdentifierValuesIndex(tbai_utils.EnumValues):
-    tbai_prefix = 0
-    company_vat_number = 1
-    invoice_date = 2
-    signature_value = 3
-
-
 class TicketBaiInvoiceState(tbai_utils.EnumValues):
     draft = 'draft'
     pending = 'pending'
@@ -445,8 +438,8 @@ class TicketBAIInvoice(models.Model):
     @api.multi
     def _get_ticketbai_api(self):
         self.ensure_one()
-        cert = self.company_id.tbai_certificate_id.public_key
-        key = self.company_id.tbai_certificate_id.private_key
+        cert = self.company_id.tbai_certificate_get_public_key()
+        key = self.company_id.tbai_certificate_get_private_key()
         error_fields = []
         if not self.api_url:
             error_fields.append("TicketBAI API URL")
@@ -599,9 +592,12 @@ class TicketBAIInvoice(models.Model):
         """
         expedition_date = datetime.strptime(
             self.expedition_date, '%d-%m-%Y').strftime('%d%m%y')
+        nif = self.company_id.partner_id.tbai_get_value_nif()
+        if not nif:
+            raise exceptions.ValidationError(_(
+                "The Company %s VAT Number is required.") % self.company_id.name)
         return [
-            'TBAI', self.company_id.partner_id.tbai_get_value_nif(),
-            expedition_date, self.signature_value[:13]]
+            'TBAI', nif, expedition_date, self.signature_value[:13]]
 
     def _get_qr_url_values(self):
         """ V 1.2
@@ -646,7 +642,7 @@ class TicketBAIInvoice(models.Model):
 
     def get_tbai_xml_signed_and_signature_value(self):
         root = self.get_tbai_xml_unsigned()
-        p12 = self.company_id.tbai_certificate_id.get_p12()
+        p12 = self.company_id.tbai_certificate_get_p12()
         signature_value = XMLSchema.sign(root, p12)
         return root, signature_value
 

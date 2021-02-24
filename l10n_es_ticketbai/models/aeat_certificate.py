@@ -1,7 +1,8 @@
-# Copyright 2020 Binovo IT Human Project SL
+# Copyright 2021 Binovo IT Human Project SL
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import logging
-from odoo import models
+import base64
+from odoo import models, fields, api
 
 _logger = logging.getLogger(__name__)
 
@@ -13,6 +14,9 @@ except(ImportError, IOError) as err:
 
 class L10nEsAeatCertificate(models.Model):
     _inherit = 'l10n.es.aeat.certificate'
+
+    tbai_p12 = fields.Binary(compute='_compute_tbai_p12')
+    tbai_p12_friendlyname = fields.Char('Alias')
 
     def get_p12(self):
         """
@@ -31,3 +35,12 @@ class L10nEsAeatCertificate(models.Model):
             private_key = f_pem.read()
         p12.set_privatekey(crypto.load_privatekey(crypto.FILETYPE_PEM, private_key))
         return p12
+
+    @api.multi
+    @api.depends('public_key', 'private_key', 'tbai_p12_friendlyname')
+    def _compute_tbai_p12(self):
+        for record in self:
+            p12 = record.get_p12()
+            if record.tbai_p12_friendlyname:  # Set on Certificate Password Wizard
+                p12.set_friendlyname(record.tbai_p12_friendlyname.encode('utf-8'))
+            record.tbai_p12 = base64.b64encode(p12.export())

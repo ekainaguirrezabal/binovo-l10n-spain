@@ -4,7 +4,7 @@ TicketBAI - Gobierno Vasco
 
 .. |badge1| image:: https://img.shields.io/badge/maturity-Alpha-yellow.png
     :target: https://odoo-community.org/page/development-status
-    :alt: Alpha
+    :alt: Beta
 .. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
@@ -16,7 +16,7 @@ TicketBAI - Gobierno Vasco
 
 Módulo para la declaración de todas las operaciones de venta realizadas por las personas y entidades
 que desarrollan actividades económicas
-https://www.gipuzkoa.eus/documents/2456431/12093238/TicketBAI_Especificaciones_v_1_0.pdf/81aa2a72-2e5a-b0b5-e990-eb3a307c72bb
+https://www.euskadi.eus/contenidos/informacion/ticketbai/es_14815/adjuntos/TicketBAI_Especificaciones_v_1_1.pdf
 
 **Table of contents**
 
@@ -26,9 +26,9 @@ https://www.gipuzkoa.eus/documents/2456431/12093238/TicketBAI_Especificaciones_v
 Installation
 ============
 
-Para instalar esté módulo se necesita:
+Para instalar este módulo se necesita:
 
-#. Los módulos l10n_es_aeat, l10n_es_aeat_certificate, l10n_es_account_invoice_sequence, account_cancel
+#. Los módulos l10n_es_ticketbai_api, l10n_es_aeat, l10n_es_aeat_certificate, l10n_es_account_invoice_sequence, account_cancel
 
 y el módulo `account_invoice_tax_required` que se encuentra en:
 
@@ -41,17 +41,7 @@ Para configurar este módulo es necesario:
 
 En la compañía:
 
-* Habilitar TicketBAI (modo desarrollador)
-* Modo test (envía las facturas a los servidores de prueba)
-* Licencia TicketBAI (es necesario dar de alta la entidad desarrolladora en Hacienda)
-* Hacienda en la que se tributa a elegir entre:
-
-  * Araba
-  * Bizkaia (No compatible con LROE)
-  * Gipuzkoa
-
-    * Nota: incluye el detalle de la factura en el envío
-* Régimen simplificado (en caso de que la compañía tribute en régimen simplificado)
+* Ver descripción módulo l10n_es_ticketbai_api
 * Certificado AEAT, dar de alta en la configuración de certificados AEAT en facturación
 
 Posición fiscal:
@@ -87,11 +77,6 @@ Usage
 
   * Se genera el fichero y se firma al cancelar una factura validada
 
-
-TODO
-====
-
-* Incorporar URLs servidores de producción (TBD)
 
 Bug Tracker
 ===========
