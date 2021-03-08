@@ -33,7 +33,7 @@
         </record>
 
         <record id="tbai_certificate_search_view" model="ir.ui.view">
-            <field name="name">ttbai.certificate.view.search</field>
+            <field name="name">tbai.certificate.view.search</field>
             <field name="model">tbai.certificate</field>
             <field name="arch" type="xml">
                 <search string="TicketBAI Certificates">

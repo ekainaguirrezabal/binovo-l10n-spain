@@ -14,6 +14,7 @@
                         <field name="developer_id" invisible="1"/>
                         <field name="name"/>
                         <field name="software"/>
+                        <field name="device_serial_number" attrs="{'invisible': [('device_serial_number', '=', False)]}"/>
                     </group>
                     <group name="ticketbai_disabled" attrs="{'invisible': [('tbai_enabled', '=', True)]}">
                         <div><p>TicketBAI is disabled.</p></div>

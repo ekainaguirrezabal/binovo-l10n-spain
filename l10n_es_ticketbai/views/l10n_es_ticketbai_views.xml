@@ -22,5 +22,14 @@
         <record model="ir.ui.menu" id="l10n_es_ticketbai_api.menu_tbai_certificate">
             <field name="action" eval="False"/>
         </record>
+        <!-- Hide default TicketBAI Installations Menu -->
+        <record model="ir.ui.menu" id="l10n_es_ticketbai_api.menu_tbai_installation">
+            <field name="action" eval="False"/>
+        </record>
+        <!-- Add TicketBAI Installations Menu -->
+        <menuitem id="menu_tbai_installation"
+                  parent="menu_l10n_es_tbai_config"
+                  action="l10n_es_ticketbai_api.action_tbai_installations"
+                  name="TicketBAI Installations"/>
     </data>
 </odoo>

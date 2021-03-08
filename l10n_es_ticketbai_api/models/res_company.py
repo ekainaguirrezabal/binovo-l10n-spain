@@ -12,11 +12,14 @@ class ResCompany(models.Model):
     tbai_certificate_id = fields.Many2one(
         comodel_name='tbai.certificate', string='Certificate',
         domain="[('company_id', '=', id)]", copy=False)
-    tbai_license_key = fields.Char('License Key', default='', copy=False)
+    tbai_installation_id = fields.Many2one(comodel_name='tbai.installation', copy=False)
+    tbai_license_key = fields.Char(
+        'License Key', related='tbai_installation_id.license_key', readonly=True)
     tbai_developer_id = fields.Many2one(
-        comodel_name='res.partner', string='Developer', copy=False)
+        comodel_name='res.partner', string='Developer',
+        related='tbai_installation_id.developer_id', readonly=True)
     tbai_software_name = fields.Char(
-        string='Software Name', default='', copy=False,
+        string='Software Name', related='tbai_installation_id.name', readonly=True,
         help="Registered name at the Tax Agency.")
     tbai_device_serial_number = fields.Char(
         'Device Serial Number', default='', copy=False)

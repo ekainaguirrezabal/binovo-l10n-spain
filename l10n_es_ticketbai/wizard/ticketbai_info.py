@@ -16,6 +16,8 @@ class TicketBaiGeneralInfo(models.TransientModel):
         comodel_name='res.partner', string='Developer',
         related='company_id.tbai_developer_id', readonly=True)
     software = fields.Char(string='Software', compute='_compute_software')
+    device_serial_number = fields.Char(
+        'Device Serial Number', compute='_compute_device_serial_number')
 
     @api.multi
     @api.depends('developer_id', 'developer_id.vat', 'developer_id.name')
@@ -32,3 +34,9 @@ class TicketBaiGeneralInfo(models.TransientModel):
                 ('name', '=', 'l10n_es_ticketbai')]).latest_version
             record.software = "(%s) %s" % (
                 software_version, record.company_id.tbai_software_name)
+
+    @api.multi
+    @api.depends('company_id')
+    def _compute_device_serial_number(self):
+        for record in self:
+            record.device_serial_number = record.company_id.tbai_device_serial_number
