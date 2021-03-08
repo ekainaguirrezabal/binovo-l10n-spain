@@ -98,14 +98,23 @@ class ResCompany(models.Model):
             self.tbai_vat_regime_simplified = False
             self.tbai_certificate_id = False
 
+    def tbai_certificate_get_p12_buffer(self):
+        if self.tbai_certificate_id:
+            return self.tbai_certificate_id.get_p12_buffer()
+        else:
+            return None
+
     def tbai_certificate_get_p12(self):
-        return self.tbai_certificate_id.get_p12()
+        if self.tbai_certificate_id:
+            return self.tbai_certificate_id.get_p12()
+        else:
+            return None
 
-    def tbai_certificate_get_public_key(self):
-        return self.tbai_certificate_id.public_key
-
-    def tbai_certificate_get_private_key(self):
-        return self.tbai_certificate_id.private_key
+    def tbai_certificate_get_p12_password(self):
+        if self.tbai_certificate_id:
+            return self.tbai_certificate_id.password
+        else:
+            return None
 
     def _tbai_build_entidad_desarrolladora(self):
         res = OrderedDict()

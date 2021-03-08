@@ -23,7 +23,8 @@
             "xmlsig",
             "cryptography",
             "qrcode",
-            "xmltodict"
+            "xmltodict",
+            "requests_pkcs12"
         ],
     },
     "data": [

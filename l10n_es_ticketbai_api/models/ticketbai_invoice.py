@@ -64,7 +64,7 @@ class TicketBAIInvoice(models.Model):
         self.ensure_one()
         error_msg = ''
         try:
-            tbai_api = self._get_ticketbai_api()
+            tbai_api = self.get_ticketbai_api()
         except exceptions.ValidationError as ve:
             _logger.exception(ve)
             tbai_api = None
@@ -399,7 +399,8 @@ class TicketBAIInvoice(models.Model):
                     qr_base_url, urlencode(qr_values, encoding='utf-8'))
                 record.qr_url = qr_url_with_crc
                 # Let QRCode decide the best version when calling make()
-                qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_M)
+                qr = qrcode.QRCode(
+                    border=0, error_correction=qrcode.constants.ERROR_CORRECT_M)
                 qr.add_data(record.qr_url)
                 qr.make()
                 img = qr.make_image(fill_color="white", back_color="black")
@@ -436,18 +437,12 @@ class TicketBAIInvoice(models.Model):
             record.api_url = url
 
     @api.multi
-    def _get_ticketbai_api(self):
+    def get_ticketbai_api(self, **kwargs):
         self.ensure_one()
-        cert = self.company_id.tbai_certificate_get_public_key()
-        key = self.company_id.tbai_certificate_get_private_key()
-        error_fields = []
-        if not self.api_url:
-            error_fields.append("TicketBAI API URL")
-        if 0 < len(error_fields):
-            raise exceptions.ValidationError(_(
-                "Company %s. TicketBAI API missing required fields: %s"
-            ) % (self.company_id.name, ", ".join(error_fields)))
-        return TicketBaiApi(self.api_url, cert, key)
+        p12_buffer = self.company_id.tbai_certificate_get_p12_buffer()
+        password = self.company_id.tbai_certificate_get_p12_password()
+        return TicketBaiApi(
+            self.api_url, p12_buffer=p12_buffer, password=password, **kwargs)
 
     @api.model
     def get_next_pending_invoice(self, company_id=False, limit=1):
@@ -654,7 +649,7 @@ class TicketBAIInvoice(models.Model):
         root_str = etree.tostring(root, xml_declaration=True, encoding='utf-8')
         self.datas = base64.b64encode(root_str)
         self.datas_fname = "%s.xsig" % self.name.replace('/', '-')
-        self.file_size = len(root_str)
+        self.file_size = len(self.datas)
         self.signature_value = signature_value
         self.state = TicketBaiInvoiceState.pending.value
         if self.schema == TicketBaiSchema.TicketBai.value:

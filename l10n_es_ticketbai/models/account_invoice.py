@@ -205,7 +205,7 @@ class AccountInvoice(models.Model):
                 lines.append((0, 0, {
                     'description': line.name,
                     'quantity': line.tbai_get_value_cantidad(),
-                    'price_unit': "%.2f" % line.price_unit,
+                    'price_unit': "%.8f" % line.price_unit,
                     'discount_amount': line.tbai_get_value_descuento(),
                     'amount_total': line.tbai_get_value_importe_total()
                 }))

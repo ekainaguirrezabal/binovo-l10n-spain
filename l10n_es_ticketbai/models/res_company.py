@@ -17,21 +17,18 @@ class ResCompany(models.Model):
 
     def tbai_certificate_get_p12(self):
         if self.tbai_aeat_certificate_id:
-            cert = self.tbai_aeat_certificate_id.get_p12()
+            return self.tbai_aeat_certificate_id.get_p12()
         else:
-            cert = super().tbai_certificate_get_p12()
-        return cert
+            return super().tbai_certificate_get_p12()
 
     def tbai_certificate_get_public_key(self):
         if self.tbai_aeat_certificate_id:
-            public_key = self.tbai_aeat_certificate_id.public_key
+            return self.tbai_aeat_certificate_id.public_key
         else:
-            public_key = super().tbai_certificate_get_public_key()
-        return public_key
+            return None
 
     def tbai_certificate_get_private_key(self):
         if self.tbai_aeat_certificate_id:
-            private_key = self.tbai_aeat_certificate_id.private_key
+            return self.tbai_aeat_certificate_id.private_key
         else:
-            private_key = super().tbai_certificate_get_private_key()
-        return private_key
+            return None

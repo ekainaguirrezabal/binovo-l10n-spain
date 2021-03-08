@@ -101,7 +101,7 @@ class TicketBaiTax(models.Model):
         help='String of float with 3 digits and 2 decimal points.')
     amount_total = fields.Char(
         'Amount Total', default='',
-        help='String of float with 12 digits and 3 decimal points.')
+        help='String of float with 12 digits and 2 decimal points.')
     re_amount = fields.Char(
         'Surcharge Amount (%)', default='',
         help='String of float with 3 digits and 2 decimal points.')
