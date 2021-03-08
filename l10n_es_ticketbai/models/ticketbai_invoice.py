@@ -11,13 +11,19 @@ class TicketBAIInvoice(models.Model):
     cancelled_invoice_id = fields.Many2one(comodel_name='account.invoice')
 
     @api.multi
+    def get_ticketbai_api(self, **kwargs):
+        self.ensure_one()
+        cert = self.company_id.tbai_certificate_get_public_key()
+        key = self.company_id.tbai_certificate_get_private_key()
+        return super().get_ticketbai_api(cert=cert, key=key, **kwargs)
+
+    @api.multi
     def send(self, **kwargs):
         self.ensure_one()
         if TicketBaiSchema.TicketBai.value == self.schema and self.invoice_id:
-            res = super().send(invoice_id=self.invoice_id.id, **kwargs)
+            return super().send(invoice_id=self.invoice_id.id, **kwargs)
         elif TicketBaiSchema.AnulaTicketBai.value == self.schema and \
                 self.cancelled_invoice_id:
-            res = super().send(invoice_id=self.cancelled_invoice_id.id, **kwargs)
+            return super().send(invoice_id=self.cancelled_invoice_id.id, **kwargs)
         else:
-            res = super().send(**kwargs)
-        return res
+            return super().send(**kwargs)
