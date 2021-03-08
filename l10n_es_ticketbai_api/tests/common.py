@@ -452,15 +452,20 @@ class TestL10nEsTicketBAIAPI(common.TransactionCase):
         if 'refund_invoice_number' in vals:
             vals.pop('refund_invoice_number')
         certificate = self.create_certificate(company.id, cert_path, cert_password)
+        installation = self.env['tbai.installation'].create({
+            'name': vals.pop('tbai_software_name'),
+            'developer_id': self.env.ref(
+                'l10n_es_ticketbai_api.res_partner_binovo').id,
+            'license_key': vals.pop('tbai_license_key')
+        })
         vals.update({
             'tbai_enabled': True,
             'tbai_test_enabled': True,
             'tbai_tax_agency_id': self.env.ref(
                 'l10n_es_ticketbai_api.tbai_tax_agency_gipuzkoa').id,
             'currency_id': self.env.ref('base.EUR').id,
-            'tbai_developer_id': self.env.ref(
-                'l10n_es_ticketbai_api.res_partner_binovo').id,
-            'tbai_certificate_id': certificate.id
+            'tbai_certificate_id': certificate.id,
+            'tbai_installation_id': installation.id
         })
         company.write(vals)
 
