@@ -30,6 +30,17 @@ class TicketBAITaxAgency(models.Model):
         compute='_compute_ticketbai_version', store=True)
 
     @api.multi
+    def get_current_version(self):
+        self.ensure_one()
+        today = fields.Date.today()
+        search_domain = [
+            ('tbai_tax_agency_id', '=', self.id),
+            '|', ('date_from', '<=', today), ('date_from', '=', False),
+            '|', ('date_to', '>=', today), ('date_to', '=', False)
+        ]
+        return self.env['tbai.tax.agency.version'].search(search_domain)
+
+    @api.multi
     @api.depends(
         'tax_agency_version_ids',
         'tax_agency_version_ids.date_from', 'tax_agency_version_ids.date_to',
@@ -37,14 +48,7 @@ class TicketBAITaxAgency(models.Model):
     )
     def _compute_ticketbai_version(self):
         for record in self:
-            today = fields.Date.today()
-            search_domain = [
-                ('tbai_tax_agency_id', '=', record.id),
-                '|', ('date_from', '<=', today), ('date_from', '=', False),
-                '|', ('date_to', '>=', today), ('date_to', '=', False)
-            ]
-            tax_agency_version = self.env['tbai.tax.agency.version'].search(
-                search_domain)
+            tax_agency_version = record.get_current_version()
             record.version = tax_agency_version.version
             record.qr_base_url = tax_agency_version.qr_base_url
             record.test_qr_base_url = tax_agency_version.test_qr_base_url

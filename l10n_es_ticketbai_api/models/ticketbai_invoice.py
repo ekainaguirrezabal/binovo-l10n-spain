@@ -375,7 +375,12 @@ class TicketBAIInvoice(models.Model):
                 record.tbai_identifier = tbai_identifier_with_crc
 
     @api.multi
-    @api.depends('tbai_identifier')
+    @api.depends(
+        'tbai_identifier',
+        'company_id', 'company_id.tbai_tax_agency_id',
+        'company_id.tbai_tax_agency_id.test_qr_base_url',
+        'company_id.tbai_tax_agency_id.qr_base_url'
+    )
     def _compute_tbai_qr(self):
         """ V 1.1
         Código QR TBAI, que consiste en un código con formato QR de tamaño mayor o igual
