@@ -22,8 +22,8 @@ class TicketBaiInvoiceCustomer(models.Model):
     name = fields.Char(help='Name and surname, or business name.', required=True)
     country_code = fields.Char(required=True)
     nif = fields.Char('NIF', default='', help='Spanish Fiscal Identification Number')
-    identification_number = fields.Char(default='',
-        help='Required Identification Number for non spanish customers.')
+    identification_number = fields.Char(
+        default='', help='Required Identification Number for non spanish customers.')
     idtype = fields.Selection(selection=[
         (TicketBaiCustomerIdType.T02.value, 'VAT identification number'),
         (TicketBaiCustomerIdType.T03.value, 'Passport'),

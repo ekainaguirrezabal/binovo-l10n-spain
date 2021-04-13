@@ -28,7 +28,7 @@ Installation
 
 Para instalar este módulo se necesita:
 
-#. Los módulos l10n_es_ticketbai_api, l10n_es_aeat, l10n_es_aeat_certificate, l10n_es_account_invoice_sequence, account_cancel
+#. Los módulos `l10n_es_ticketbai_api`, `l10n_es_aeat`, `l10n_es_aeat_certificate`, `l10n_es_account_invoice_sequence`, `account_cancel`
 
 y el módulo `account_invoice_tax_required` que se encuentra en:
 
@@ -37,11 +37,12 @@ https://github.com/OCA/account-invoicing
 Configuration
 =============
 
+Ver descripción módulo `l10n_es_ticketbai_api`.
+
 Para configurar este módulo es necesario:
 
 En la compañía:
 
-* Ver descripción módulo l10n_es_ticketbai_api
 * Certificado AEAT, dar de alta en la configuración de certificados AEAT en facturación
 
 Posición fiscal:

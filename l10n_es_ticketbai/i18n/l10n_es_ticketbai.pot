@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 11.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-08 15:49+0000\n"
-"PO-Revision-Date: 2021-03-08 15:49+0000\n"
+"POT-Creation-Date: 2021-04-13 09:42+0000\n"
+"PO-Revision-Date: 2021-04-13 09:42+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -61,7 +61,12 @@ msgid "By substitution"
 msgstr ""
 
 #. module: l10n_es_ticketbai
-#: code:addons/l10n_es_ticketbai/models/account_invoice.py:254
+#: model:ir.ui.view,arch_db:l10n_es_ticketbai.tbai_invoice_form
+msgid "Cancel and recreate"
+msgstr ""
+
+#. module: l10n_es_ticketbai
+#: code:addons/l10n_es_ticketbai/models/account_invoice.py:266
 #, python-format
 msgid "Cancellation"
 msgstr ""
@@ -205,13 +210,12 @@ msgstr ""
 #. module: l10n_es_ticketbai
 #: model:ir.model,name:l10n_es_ticketbai.model_account_invoice
 #: model:ir.model.fields,field_description:l10n_es_ticketbai.field_tbai_invoice_invoice_id
-#: model:ir.model.fields,field_description:l10n_es_ticketbai.field_tbai_response_invoice_id
 #: model:ir.ui.view,arch_db:l10n_es_ticketbai.tbai_invoice_form
 msgid "Invoice"
 msgstr ""
 
 #. module: l10n_es_ticketbai
-#: code:addons/l10n_es_ticketbai/models/account_invoice.py:64
+#: code:addons/l10n_es_ticketbai/models/account_invoice.py:65
 #, python-format
 msgid "Invoice %s. You cannot change to draft a numbered invoice!"
 msgstr ""
@@ -222,7 +226,7 @@ msgid "Invoice Line"
 msgstr ""
 
 #. module: l10n_es_ticketbai
-#: code:addons/l10n_es_ticketbai/models/account_invoice.py:357
+#: code:addons/l10n_es_ticketbai/models/account_invoice.py:369
 #, python-format
 msgid "Invoice Number Prefix %s is not part of Invoice Number %s!"
 msgstr ""
@@ -526,15 +530,21 @@ msgid "TicketBAI is disabled."
 msgstr ""
 
 #. module: l10n_es_ticketbai
-#: code:addons/l10n_es_ticketbai/models/account_invoice.py:135
+#: code:addons/l10n_es_ticketbai/models/account_invoice.py:147
 #, python-format
 msgid "TicketBAI refund by differences only available for Customer Credit Notes."
 msgstr ""
 
 #. module: l10n_es_ticketbai
-#: code:addons/l10n_es_ticketbai/models/account_invoice.py:124
+#: code:addons/l10n_es_ticketbai/models/account_invoice.py:136
 #, python-format
 msgid "TicketBAI refund by substitution only available for Customer Invoices."
+msgstr ""
+
+#. module: l10n_es_ticketbai
+#: code:addons/l10n_es_ticketbai/models/ticketbai_invoice.py:37
+#, python-format
+msgid "TicketBAI: You cannot cancel and recreate an Invoice with a state different than 'Error'."
 msgstr ""
 
 #. module: l10n_es_ticketbai
@@ -579,14 +589,14 @@ msgid "VAT Regimes"
 msgstr ""
 
 #. module: l10n_es_ticketbai
-#: code:addons/l10n_es_ticketbai/models/account_invoice.py:123
-#: code:addons/l10n_es_ticketbai/models/account_invoice.py:134
+#: code:addons/l10n_es_ticketbai/models/account_invoice.py:135
+#: code:addons/l10n_es_ticketbai/models/account_invoice.py:146
 #, python-format
 msgid "Warning"
 msgstr ""
 
 #. module: l10n_es_ticketbai
-#: code:addons/l10n_es_ticketbai/models/account_invoice.py:276
+#: code:addons/l10n_es_ticketbai/models/account_invoice.py:288
 #, python-format
 msgid "You cannot cancel an invoice while being sent to the Tax Agency.\n"
 "Related invoices: %s"
