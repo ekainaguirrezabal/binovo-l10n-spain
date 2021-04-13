@@ -41,8 +41,7 @@ En la compañía:
 * Habilitar TicketBAI (modo desarrollador)
 * Habilitar entorno de pruebas (envía las facturas a los servidores de prueba)
 * Certificado TicketBAI
-* Licencia TicketBAI (es necesario dar de alta la entidad desarrolladora en Hacienda)
-* Nombre de software registrado en la Hacienda
+* Instalación TicketBAI
 * Hacienda en la que se tributa a elegir entre:
 
   * Araba
@@ -51,15 +50,16 @@ En la compañía:
 
 * Régimen simplificado (en caso de que la compañía tribute en régimen simplificado)
 
+Instalación TicketBAI:
+
+* Nombre de software registrado en la Hacienda
+* Entidad Desarrolladora
+* Licencia TicketBAI (es necesario dar de alta la entidad desarrolladora en Hacienda)
+
 En la configuración general:
 
 * Número de serie del dispositivo (opcional)
 
-
-TODO
-====
-
-* Incorporar URLs servidores de producción (TBD)
 
 Bug Tracker
 ===========

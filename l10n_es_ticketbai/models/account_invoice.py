@@ -27,8 +27,9 @@ class AccountInvoice(models.Model):
     tbai_cancellation_ids = fields.One2many(
         comodel_name='tbai.invoice', inverse_name='cancelled_invoice_id',
         string='TicketBAI Cancellations')
-    tbai_response_ids = fields.One2many(
-        comodel_name='tbai.response', inverse_name='invoice_id', string='Responses')
+    tbai_response_ids = fields.Many2many(
+        comodel_name='tbai.response', compute='_compute_tbai_response_ids',
+        string='Responses')
     tbai_datetime_invoice = fields.Datetime(
         compute='_compute_tbai_datetime_invoice', store=True, copy=False)
     tbai_date_operation = fields.Datetime('Operation Date', copy=False)
@@ -94,12 +95,22 @@ class AccountInvoice(models.Model):
                     fiscal_position = self.env['account.fiscal.position'].browse(
                         vals['fiscal_position_id'])
                     vals['tbai_vat_regime_key'] = \
-                            fiscal_position.tbai_vat_regime_key.id
+                        fiscal_position.tbai_vat_regime_key.id
                     vals['tbai_vat_regime_key2'] = \
-                            fiscal_position.tbai_vat_regime_key2.id
+                        fiscal_position.tbai_vat_regime_key2.id
                     vals['tbai_vat_regime_key3'] = \
-                            fiscal_position.tbai_vat_regime_key3.id
+                        fiscal_position.tbai_vat_regime_key3.id
         return super().create(vals)
+
+    @api.depends(
+        'tbai_invoice_ids', 'tbai_invoice_ids.state',
+        'tbai_cancellation_ids', 'tbai_cancellation_ids.state'
+    )
+    def _compute_tbai_response_ids(self):
+        for record in self:
+            response_ids = record.tbai_invoice_ids.mapped('tbai_response_ids').ids
+            response_ids += record.tbai_cancellation_ids.mapped('tbai_response_ids').ids
+            record.tbai_response_ids = [(6, 0, response_ids)]
 
     @api.depends('date', 'date_invoice')
     def _compute_tbai_datetime_invoice(self):
@@ -108,9 +119,10 @@ class AccountInvoice(models.Model):
 
     @api.onchange('fiscal_position_id')
     def onchange_fiscal_position_id_tbai_vat_regime_key(self):
-        self.tbai_vat_regime_key = self.fiscal_position_id.tbai_vat_regime_key.id
-        self.tbai_vat_regime_key2 = self.fiscal_position_id.tbai_vat_regime_key2.id
-        self.tbai_vat_regime_key3 = self.fiscal_position_id.tbai_vat_regime_key3.id
+        if self.fiscal_position_id:
+            self.tbai_vat_regime_key = self.fiscal_position_id.tbai_vat_regime_key.id
+            self.tbai_vat_regime_key2 = self.fiscal_position_id.tbai_vat_regime_key2.id
+            self.tbai_vat_regime_key3 = self.fiscal_position_id.tbai_vat_regime_key3.id
 
     @api.onchange('tbai_refund_type')
     def onchange_tbai_refund_type(self):
@@ -218,7 +230,7 @@ class AccountInvoice(models.Model):
             'l10n_es_ticketbai.tbai_tax_map_IRPF').tax_template_ids.mapped(
             'description')
         for tax in self.tax_line_ids.filtered(
-                lambda tax: tax.tax_id.description not in descriptions):
+                lambda x: x.tax_id.description not in descriptions):
             taxes.append((0, 0, {
                 'base': tax.tbai_get_value_base_imponible(),
                 'is_subject_to': tax.tax_id.tbai_is_subject_to_tax(),
@@ -321,10 +333,10 @@ class AccountInvoice(models.Model):
 
     @api.model
     def _get_refund_common_fields(self):
-        fields = super()._get_refund_common_fields()
-        fields.append('tbai_substitution_invoice_id')
-        fields.append('company_id')
-        return fields
+        refund_common_fields = super()._get_refund_common_fields()
+        refund_common_fields.append('tbai_substitution_invoice_id')
+        refund_common_fields.append('company_id')
+        return refund_common_fields
 
     def _prepare_tax_line_vals(self, line, tax):
         vals = super()._prepare_tax_line_vals(line, tax)
