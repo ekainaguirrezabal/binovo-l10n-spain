@@ -226,6 +226,21 @@ class AccountInvoice(models.Model):
                 }
             }
 
+    @api.onchange('partner_id', 'company_id')
+    def _onchange_partner_id(self):
+        """Trigger fiscal position onchange for assigning SII key when creating
+        bills from purchase module with the button from PO, due to the special
+        way this is triggered through chained onchanges.
+        """
+        trigger_fp = (
+            self.partner_id.property_account_position_id !=
+            self.fiscal_position_id
+        )
+        res = super()._onchange_partner_id()
+        if trigger_fp:
+            self.onchange_fiscal_position_id_l10n_es_aeat_sii()
+        return res
+
     @api.onchange('fiscal_position_id')
     def onchange_fiscal_position_id_l10n_es_aeat_sii(self):
         for invoice in self.filtered('fiscal_position_id'):
@@ -496,7 +511,18 @@ class AccountInvoice(models.Model):
                 taxes_sfesb + taxes_sfesisp + taxes_sfens + taxes_sfesbe
             )
             if tax in taxes_not_in_total:
-                not_in_amount_total += tax_line.amount_total
+                if self.currency_id != self.company_id.currency_id:
+                    currency = self.currency_id.with_context(
+                        date=self._get_currency_rate_date(),
+                        company_id=self.company_id.id
+                        )
+                    amount = currency.compute(
+                        tax_line.amount_total,
+                        self.company_id.currency_id
+                        )
+                else:
+                    amount = tax_line.amount_total
+                not_in_amount_total += amount
             if tax in breakdown_taxes:
                 tax_breakdown = taxes_dict.setdefault(
                     'DesgloseFactura', {},
@@ -627,7 +653,18 @@ class AccountInvoice(models.Model):
         for tax_line in self.tax_line_ids:
             tax = tax_line.tax_id
             if tax in taxes_not_in_total:
-                not_in_amount_total += tax_line.amount_total
+                if self.currency_id != self.company_id.currency_id:
+                    currency = self.currency_id.with_context(
+                        date=self._get_currency_rate_date(),
+                        company_id=self.company_id.id
+                        )
+                    amount = currency.compute(
+                        tax_line.amount_total,
+                        self.company_id.currency_id
+                        )
+                else:
+                    amount = tax_line.amount_total
+                not_in_amount_total += amount
             if tax in taxes_sfrisp:
                 base_dict = taxes_dict.setdefault(
                     'InversionSujetoPasivo', {'DetalleIVA': []},

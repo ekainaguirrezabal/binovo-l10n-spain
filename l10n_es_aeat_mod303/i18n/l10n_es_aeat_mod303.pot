@@ -271,7 +271,7 @@ msgid "ID"
 msgstr ""
 
 #. module: l10n_es_aeat_mod303
-#: code:addons/l10n_es_aeat_mod303/models/mod303.py:232
+#: code:addons/l10n_es_aeat_mod303/models/mod303.py:240
 #, python-format
 msgid "In previous declarations this year you reported a Result Type 'To Compensate'. You might need to fill field '[67] Fees to compensate' in this declaration."
 msgstr ""
@@ -380,7 +380,7 @@ msgid "Resultado"
 msgstr ""
 
 #. module: l10n_es_aeat_mod303
-#: code:addons/l10n_es_aeat_mod303/models/mod303.py:365
+#: code:addons/l10n_es_aeat_mod303/models/mod303.py:383
 #, python-format
 msgid "Select an account for receiving the money"
 msgstr ""
@@ -396,7 +396,7 @@ msgid "Taxpayers who pay jointly to the Central Government and the Provincial Co
 msgstr ""
 
 #. module: l10n_es_aeat_mod303
-#: code:addons/l10n_es_aeat_mod303/models/mod303.py:374
+#: code:addons/l10n_es_aeat_mod303/models/mod303.py:394
 #, python-format
 msgid "The fee to compensate must be indicated as a positive number."
 msgstr ""
@@ -419,6 +419,11 @@ msgstr ""
 #. module: l10n_es_aeat_mod303
 #: selection:l10n.es.aeat.mod303.report,result_type:0
 msgid "To return"
+msgstr ""
+
+#. module: l10n_es_aeat_mod303
+#: model:ir.model.fields,field_description:l10n_es_aeat_mod303.field_l10n_es_aeat_mod303_report_potential_cuota_compensar
+msgid "[110] Pending fees to compensate"
 msgstr ""
 
 #. module: l10n_es_aeat_mod303
@@ -452,11 +457,6 @@ msgid "[66] Attributable to the Administration - [67] Fees to compensate + [68] 
 msgstr ""
 
 #. module: l10n_es_aeat_mod303
-#: model:ir.model.fields,field_description:l10n_es_aeat_mod303.field_l10n_es_aeat_mod303_report_cuota_compensar
-msgid "[67] Fees to compensate"
-msgstr ""
-
-#. module: l10n_es_aeat_mod303
 #: model:ir.model.fields,field_description:l10n_es_aeat_mod303.field_l10n_es_aeat_mod303_report_regularizacion_anual
 msgid "[68] Annual regularization"
 msgstr ""
@@ -479,6 +479,16 @@ msgstr ""
 #. module: l10n_es_aeat_mod303
 #: model:ir.model.fields,field_description:l10n_es_aeat_mod303.field_l10n_es_aeat_mod303_report_casilla_77
 msgid "[77] VAT deferred (Settle by customs)"
+msgstr ""
+
+#. module: l10n_es_aeat_mod303
+#: model:ir.model.fields,field_description:l10n_es_aeat_mod303.field_l10n_es_aeat_mod303_report_cuota_compensar
+msgid "[78] Applied fees to compensate (old [67])"
+msgstr ""
+
+#. module: l10n_es_aeat_mod303
+#: model:ir.model.fields,field_description:l10n_es_aeat_mod303.field_l10n_es_aeat_mod303_report_remaining_cuota_compensar
+msgid "[87] Remaining fees to compensate"
 msgstr ""
 
 #. module: l10n_es_aeat_mod303
