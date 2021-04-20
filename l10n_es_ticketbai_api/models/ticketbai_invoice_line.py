@@ -47,20 +47,20 @@ class TicketBaiInvoiceLine(models.Model):
     @api.constrains('price_unit')
     def _check_price_unit(self):
         for record in self:
-            tbai_utils.check_str_decimal(_(
-                "TicketBAI Invoice %s: Line %s Price Unit"
-            ) % (record.tbai_invoice_id.name, record.description),
-                                         record.price_unit, no_decimal_digits=8)
+            tbai_utils.check_str_decimal(
+                _("TicketBAI Invoice %s: Line %s Price Unit") % (
+                    record.tbai_invoice_id.name, record.description),
+                record.price_unit, no_decimal_digits=8)
 
     @api.multi
     @api.constrains('discount_amount')
     def _check_discount_amount(self):
         for record in self:
             if record.discount_amount:
-                tbai_utils.check_str_decimal(_(
-                    "TicketBAI Invoice %s: Line %s Discount Amount"
-                ) % (record.tbai_invoice_id.name, record.description),
-                                             record.discount_amount)
+                tbai_utils.check_str_decimal(
+                    _("TicketBAI Invoice %s: Line %s Discount Amount") % (
+                        record.tbai_invoice_id.name, record.description),
+                    record.discount_amount)
 
     @api.multi
     @api.constrains('amount_total')

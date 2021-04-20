@@ -1,8 +1,15 @@
 # Copyright 2021 Binovo IT Human Project SL
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+import logging
 from requests import exceptions
-from requests_pkcs12 import post as pkcs12_post
 from odoo.tools.safe_eval import safe_eval
+
+_logger = logging.getLogger(__name__)
+
+try:
+    from requests_pkcs12 import post as pkcs12_post
+except(ImportError, IOError) as err:
+    _logger.error(err)
 
 
 class TicketBaiResponse:
@@ -43,7 +50,6 @@ class TicketBaiApi:
     def requests_post(self, data):
         try:
             response = self.post(data)
-            response.raise_for_status()
             data = response.content.decode(response.encoding)
             if 200 == response.status_code:
                 tb_response = TicketBaiResponse(data=data)
@@ -51,7 +57,7 @@ class TicketBaiApi:
                 tb_response = TicketBaiResponse(
                     error=True, strerror=response.reason, errno=response.status_code)
         except exceptions.RequestException as re:
-            if hasattr(re, 'response') and re.response:
+            if hasattr(re, 'response'):
                 errno = re.response.status_code
                 content = safe_eval(re.response.text)
                 strerror = content['message']

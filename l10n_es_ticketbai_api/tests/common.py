@@ -459,6 +459,7 @@ class TestL10nEsTicketBAIAPI(common.TransactionCase):
             'license_key': vals.pop('tbai_license_key')
         })
         vals.update({
+            'country_id': self.env.ref('base.es').id,
             'tbai_enabled': True,
             'tbai_test_enabled': True,
             'tbai_tax_agency_id': self.env.ref(

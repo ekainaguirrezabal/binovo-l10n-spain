@@ -20,7 +20,6 @@
                                    attrs="{'required': [('tbai_enabled', '=', True)]}"
                                    options="{'no_open':True,'no_create':True}"/>
                             <field name="tbai_developer_id"/>
-                            <field name="tbai_license_key"/>
                             <field name="tbai_tax_agency_id" attrs="{'required': [('tbai_enabled', '=', True)]}"
                                    options="{'no_open':True,'no_create':True}"/>
                             <field name="tbai_vat_regime_simplified"/>

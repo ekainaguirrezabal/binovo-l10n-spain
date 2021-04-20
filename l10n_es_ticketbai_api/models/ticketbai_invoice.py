@@ -2,7 +2,6 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import logging
 from datetime import datetime
-import qrcode
 from urllib.parse import urlencode
 import io
 import base64
@@ -20,6 +19,11 @@ from odoo import models, fields, exceptions, _, api
 
 _logger = logging.getLogger(__name__)
 TBAI_REJECTED_MAX_RETRIES = 5
+
+try:
+    import qrcode
+except(ImportError, IOError) as err:
+    _logger.error(err)
 
 
 class TicketBaiQRParams(tbai_utils.EnumValues):
@@ -570,7 +574,8 @@ class TicketBAIInvoice(models.Model):
                             response_codes:
                         retry_later = True
                         error = False
-                elif TicketBaiSchema.AnulaTicketBai.value == next_pending_invoice.schema:
+                elif TicketBaiSchema.AnulaTicketBai.value == \
+                        next_pending_invoice.schema:
                     if TicketBaiCancellationResponseCode.INVOICE_ALREADY_CANCELLED.\
                             value in response_codes:
                         next_pending_invoice.mark_as_sent()
@@ -591,6 +596,9 @@ class TicketBAIInvoice(models.Model):
                 retry_later = True
             if not retry_later:
                 next_pending_invoice = self.get_next_pending_invoice()
+            # If an Invoice has been sent successfully to the Tax Agency
+            # we need to make sure that the current state is saved in case an exception
+            # occurs in the following invoices.
             self.env.cr.commit()
 
     def _get_tbai_identifier_values(self):
@@ -887,7 +895,7 @@ class TicketBAIInvoice(models.Model):
         for tax in not_subject_to_taxes:
             res.append(OrderedDict([
                 ("Causa", tax.not_subject_to_cause),
-                ("Importe", tax.amount_total)
+                ("Importe", tax.base)
             ]))
         return res
 

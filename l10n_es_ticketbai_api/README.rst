@@ -29,7 +29,7 @@ Installation
 Para instalar esté módulo se necesita:
 
 #. Los módulos base y base_setup
-#. Las librerías Python OpenSSL, xmlsig, cryptography, qrcode y xmltodict.
+#. Las librerías Python OpenSSL, xmlsig, cryptography, qrcode, xmltodict y requests_pkcs12.
 
 Configuration
 =============
