@@ -91,7 +91,7 @@ class AccountInvoice(models.Model):
                                     'modify' == filter_refund and
                                     'out_refund' == vals['type']):
                                 vals['tbai_refund_key'] = RefundCode.R1.value
-                if 'fiscal_position_id' in vals:
+                if vals.get('fiscal_position_id', False):
                     fiscal_position = self.env['account.fiscal.position'].browse(
                         vals['fiscal_position_id'])
                     vals['tbai_vat_regime_key'] = \
