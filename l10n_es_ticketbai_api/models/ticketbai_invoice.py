@@ -111,7 +111,9 @@ class TicketBAIInvoice(models.Model):
         string='Refunded Invoices', copy=True,
         comodel_name='tbai.invoice.refund', inverse_name='tbai_invoice_id')
     qr_url = fields.Char('URL', compute='_compute_tbai_qr', store=True, copy=False)
-    qr = fields.Binary(string="QR", compute='_compute_tbai_qr', store=True, copy=False, attachment=True)
+    qr = fields.Binary(
+        string="QR", compute='_compute_tbai_qr', store=True, copy=False,
+        attachment=True)
     datas = fields.Binary(copy=False, attachment=True)
     datas_fname = fields.Char('File Name', copy=False)
     file_size = fields.Integer('File Size', copy=False)
