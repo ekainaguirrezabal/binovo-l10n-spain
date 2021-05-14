@@ -454,6 +454,7 @@ class TestL10nEsTicketBAIAPI(common.TransactionCase):
         certificate = self.create_certificate(company.id, cert_path, cert_password)
         installation = self.env['tbai.installation'].create({
             'name': vals.pop('tbai_software_name'),
+            'version': vals.pop('tbai_software_version'),
             'developer_id': self.env.ref(
                 'l10n_es_ticketbai_api.res_partner_binovo').id,
             'license_key': vals.pop('tbai_license_key')

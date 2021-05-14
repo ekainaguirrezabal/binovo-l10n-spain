@@ -52,7 +52,8 @@ En la compañía:
 
 Instalación TicketBAI:
 
-* Nombre de software registrado en la Hacienda
+* Nombre del software registrado en la Hacienda
+* Versión del software
 * Entidad Desarrolladora
 * Licencia TicketBAI (es necesario dar de alta la entidad desarrolladora en Hacienda)
 
@@ -83,6 +84,8 @@ Contributors
 ~~~~~~~~~~~~
 
 * Victor Laskurain <blaskurain@binovo.es>
+* Guillermo Murcia <gmurcia@binovo.es>
+* Alicia Rodriguez <arodriguez@binovo.es>
 * Luis J. Salvatierra <ljsalvatierra@binovo.es>
 
 Maintainers

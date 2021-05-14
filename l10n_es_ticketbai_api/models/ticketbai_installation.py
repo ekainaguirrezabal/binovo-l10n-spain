@@ -13,6 +13,9 @@ class TicketBaiInstallation(models.Model):
         comodel_name='res.partner', string='Developer', required=True, copy=False)
     vat = fields.Char('TIN', related='developer_id.vat')
     license_key = fields.Char('License Key', required=True, copy=False)
+    version = fields.Char(
+        string='Software Version', required=True, copy=False,
+        help="Version of the software.")
 
     _sql_constraints = [
         ('name_ref_uniq', 'UNIQUE(name)', _('Software Name must be unique!')),

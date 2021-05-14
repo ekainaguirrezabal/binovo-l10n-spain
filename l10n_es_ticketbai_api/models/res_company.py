@@ -1,7 +1,7 @@
 # Copyright 2021 Binovo IT Human Project SL
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 from collections import OrderedDict
-from odoo import release, models, fields, api, exceptions, _
+from odoo import models, fields, api, exceptions, _
 
 
 class ResCompany(models.Model):
@@ -21,6 +21,9 @@ class ResCompany(models.Model):
     tbai_software_name = fields.Char(
         string='Software Name', related='tbai_installation_id.name', readonly=True,
         help="Registered name at the Tax Agency.")
+    tbai_software_version = fields.Char(
+        string='Software Version', related='tbai_installation_id.version', copy=False,
+        help="Version of the software.")
     tbai_device_serial_number = fields.Char(
         'Device Serial Number', default='', copy=False)
     tbai_tax_agency_id = fields.Many2one(
@@ -91,11 +94,13 @@ class ResCompany(models.Model):
 
     @api.onchange('tbai_enabled')
     def onchange_tbai_enabled(self):
-        if not self.tbai_enabled:
+        if self.tbai_enabled:
+            tbai_instalations = self.env['tbai.installation'].search([])
+            if len(tbai_instalations) == 1:
+                self.tbai_installation_id = tbai_instalations[0]
+        else:
+            self.tbai_installation_id = False
             self.tbai_test_enabled = False
-            self.tbai_license_key = ''
-            self.tbai_developer_id = False
-            self.tbai_software_name = ''
             self.tbai_device_serial_number = ''
             self.tbai_tax_agency_id = False
             self.tbai_vat_regime_simplified = False
@@ -140,5 +145,5 @@ class ResCompany(models.Model):
             ("LicenciaTBAI", self.tbai_license_key),
             ("EntidadDesarrolladora", self._tbai_build_entidad_desarrolladora()),
             ("Nombre", self.tbai_software_name),
-            ("Version", release.version)
+            ("Version", self.tbai_software_version)
         ])
