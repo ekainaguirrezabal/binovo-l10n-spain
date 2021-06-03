@@ -149,7 +149,7 @@ class XMLSchema:
         ctx.public_key = ctx.x509.public_key()
         ctx.private_key = certificate.get_privatekey().to_cryptography_key()
         dslist = ('ds:Object', (),
-                  ('etsi:QualifyingProperties', ('Target', signature_id),
+                  ('etsi:QualifyingProperties', ('Target', '#' + signature_id),
                    ('etsi:SignedProperties', ('Id', sp_id),
                     ('etsi:SignedSignatureProperties', (),
                      ('etsi:SigningTime', (), datetime.now().isoformat()),
