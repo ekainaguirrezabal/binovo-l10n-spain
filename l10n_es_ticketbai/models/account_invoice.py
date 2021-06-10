@@ -63,6 +63,15 @@ class AccountInvoice(models.Model):
                     "Invoice %s. You cannot change to draft a numbered invoice!"
                 ) % record.number)
 
+    @api.multi
+    def unlink(self):
+        for record in self:
+            if record.state != 'draft':
+                raise exceptions.UserError(_(
+                    'You cannot delete an invoice which is not draft. '
+                    'You should create a credit note instead.'))
+        return super().unlink()
+
     @api.model
     def create(self, vals):
         if vals and vals.get('company_id', False):
