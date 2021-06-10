@@ -11,11 +11,3 @@ class AccountInvoiceRefund(models.TransientModel):
         data_refund = self.read(['filter_refund'])[0]['filter_refund']
         return super(AccountInvoiceRefund,
                      self.with_context(filter_refund=data_refund)).invoice_refund()
-
-    @api.multi
-    def compute_refund(self, mode='refund'):
-        if 'modify' == mode:
-            for invoice in self.env['account.invoice'].browse(
-                    self._context.get('active_ids')):
-                invoice.tbai_substitution_invoice_id = invoice.id
-        return super().compute_refund(mode=mode)

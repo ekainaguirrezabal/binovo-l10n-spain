@@ -72,11 +72,11 @@ class TestL10nEsTicketBAI(TestL10nEsTicketBAIAPI):
 
     def create_aeat_certificate(self):
         test_dir_path = os.path.abspath(os.path.dirname(__file__))
-        p12_filepath = "%s/certs/ciudadano_act.p12" % test_dir_path
+        p12_filepath = "%s/certs/ciudadano_eidas_act.p12" % test_dir_path
         with open(p12_filepath, 'rb') as f:
             p12_file = f.read()
-        pem_filepath = "%s/certs/private_up_8mgwq.pem" % test_dir_path
-        crt_filepath = "%s/certs/public_362gar7l.crt" % test_dir_path
+        pem_filepath = "%s/certs/private_n4c_8fov.pem" % test_dir_path
+        crt_filepath = "%s/certs/public_076ebb7u.crt" % test_dir_path
         aeat_certificate = self.env['l10n.es.aeat.certificate'].create({
             'name': 'TicketBAI - Test certificate',
             'folder': 'TicketBAI',
