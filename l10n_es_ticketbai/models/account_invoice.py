@@ -12,9 +12,6 @@ class AccountInvoice(models.Model):
     _inherit = 'account.invoice'
 
     tbai_enabled = fields.Boolean(related='company_id.tbai_enabled', readonly=True)
-    tbai_substitution_invoice_id = fields.Many2one(
-        comodel_name='account.invoice', copy=False,
-        help="Link between a validated Customer Invoice and its substitute.")
     tbai_invoice_id = fields.Many2one(
         comodel_name='tbai.invoice', string='TicketBAI Invoice',
         copy=False)
@@ -74,23 +71,11 @@ class AccountInvoice(models.Model):
                 filter_refund = self._context.get('filter_refund', False)
                 invoice_type = vals.get('type', False)
                 if filter_refund and invoice_type:
-                    if not ('modify' == filter_refund and 'out_refund' == vals['type']):
+                    if 'out_refund' == vals['type']:
                         if 'tbai_refund_type' not in vals:
-                            if 'modify' == filter_refund:
-                                vals[
-                                    'tbai_refund_type'] = \
-                                    RefundType.substitution.value
-                            elif filter_refund in \
-                                    ['refund', 'cancel'] and \
-                                    'out_refund' == vals['type']:
-                                vals[
-                                    'tbai_refund_type'] = \
-                                    RefundType.differences.value
+                            vals['tbai_refund_type'] = RefundType.differences.value
                         if 'tbai_refund_key' not in vals:
-                            if not (
-                                    'modify' == filter_refund and
-                                    'out_refund' == vals['type']):
-                                vals['tbai_refund_key'] = RefundCode.R1.value
+                            vals['tbai_refund_key'] = RefundCode.R1.value
                 if vals.get('fiscal_position_id', False):
                     fiscal_position = self.env['account.fiscal.position'].browse(
                         vals['fiscal_position_id'])
@@ -127,15 +112,16 @@ class AccountInvoice(models.Model):
     @api.onchange('tbai_refund_type')
     def onchange_tbai_refund_type(self):
         if self.tbai_refund_type:
-            if 'out_invoice' != self.type and \
+            if ('out_invoice' != self.type or
+                    ('out_invoice' == self.type and not
+                        self.tbai_substitute_simplified_invoice)) and \
                     RefundType.substitution.value == self.tbai_refund_type:
                 self.tbai_refund_type = False
                 return {
                     'warning': {
                         'title': _("Warning"),
                         'message': _(
-                            "TicketBAI refund by substitution only available for "
-                            "Customer Invoices.")
+                            "TicketBAI refund by substitution is not supported.")
                     }
                 }
             elif 'out_refund' != self.type and \
@@ -183,17 +169,10 @@ class AccountInvoice(models.Model):
         retencion_soportada = self.tbai_get_value_retencion_soportada()
         if retencion_soportada:
             vals['tax_retention_amount_total'] = retencion_soportada
-        if self.tbai_is_invoice_refund():
-            if RefundType.substitution.value == self.tbai_refund_type:
-                refunded_invoice = self.tbai_substitution_invoice_id
-                vals.update({
-                    'substituted_invoice_amount_total_untaxed':
-                        refunded_invoice.tbai_get_value_base_rectificada(),
-                    'substituted_invoice_total_tax_amount':
-                        refunded_invoice.tbai_get_value_cuota_rectificada()
-                })
-            else:
-                refunded_invoice = self.refund_invoice_id
+        if self.tbai_is_invoice_refund() and \
+                RefundType.differences.value == self.tbai_refund_type:
+            # You may inherit this method to support substitution credit notes (refunds)
+            refunded_invoice = self.refund_invoice_id
             vals.update({
                 'is_invoice_refund': True,
                 'refund_code': self.tbai_refund_key,
@@ -281,15 +260,24 @@ class AccountInvoice(models.Model):
 
     @api.multi
     def action_cancel(self):
+        non_cancelled_refunds = \
+            self.mapped('refund_invoice_ids').filtered(lambda x: 'cancel' != x.state)
+        if 0 < len(non_cancelled_refunds):
+            raise exceptions.ValidationError(_(
+                "You cannot cancel an invoice with non cancelled credit notes.\n"
+                "Related invoices: %s") % ', '.join(
+                x.number for x in non_cancelled_refunds))
         pending_invoices = self.filtered(
-            lambda x: x.tbai_enabled and 'open' == x.state and x.tbai_invoice_id and
+            lambda x: x.tbai_enabled and 'open' == x.state and
+            x.tbai_invoice_id and
             TicketBaiInvoiceState.pending.value == x.tbai_invoice_id.state)
         if 0 < len(pending_invoices):
             raise exceptions.ValidationError(_(
                 "You cannot cancel an invoice while being sent to the Tax Agency.\n"
                 "Related invoices: %s") % ', '.join(x.number for x in pending_invoices))
         tbai_invoices = self.sudo().filtered(
-            lambda x: x.tbai_enabled and 'open' == x.state and x.tbai_invoice_id and
+            lambda x: x.tbai_enabled and x.state in ['open', 'in_payment', 'paid'] and
+            x.tbai_invoice_id and
             TicketBaiInvoiceState.sent.value == x.tbai_invoice_id.state)
         tbai_invoices._tbai_invoice_cancel()
         return super().action_cancel()
@@ -297,44 +285,30 @@ class AccountInvoice(models.Model):
     @api.multi
     def invoice_validate(self):
         res = super().invoice_validate()
-        filter_refund = self._context.get('filter_refund', False)
-        if not filter_refund or 'cancel' == filter_refund:
-            # Do not send Credit Note to the Tax Agency when created from Refund Wizard
-            # in 'modify' mode.
-            # Case 1. Filter refund -> refund: creates a draft credit note, not
-            # validated from wizard.
-            # Case 2. Filter refund -> cancel: creates a validated credit note from
-            # wizard
-            # Case 3. Filter refund -> modify: creates a validated credit note
-            # (do nothing) and a draft one.
-            #   * In this last case, the draft credit note will be validated manually by
-            #   the user. The already validated
-            #   invoice cancels the one that is going to be substituted.
-            # Filter refund invoices on which its refunded invoice does not have a
-            # TicketBAI Invoice associated,
-            # or does have associated a TicketBAI cancellation.
-            tbai_invoices = self.sudo().filtered(
-                lambda x: x.tbai_enabled and (
-                    'out_invoice' == x.type or
-                    (
-                        x.refund_invoice_id and 'out_refund' == x.type and
-                        x.tbai_refund_type in
-                        [
-                            RefundType.differences.value,
-                            RefundType.substitution.value
-                        ] and
-                        x.refund_invoice_id.tbai_invoice_id and not
-                        x.refund_invoice_id.tbai_cancellation_id
-                    )
+        # Credit Notes:
+        # A. refund: creates a draft credit note, not validated from wizard.
+        # B. cancel: creates a validated credit note from wizard
+        # C. modify: creates a validated credit note and a draft invoice.
+        #  * The draft invoice won't be a credit note 'by substitution',
+        #  but a normal customer invoice.
+        # There is no 'by substitution' credit note, only 'by differences'.
+        tbai_invoices = self.sudo().filtered(
+            lambda x: x.tbai_enabled and (
+                'out_invoice' == x.type or
+                (
+                    x.refund_invoice_id and 'out_refund' == x.type and
+                    x.tbai_refund_type == RefundType.differences.value and
+                    x.refund_invoice_id.tbai_invoice_id and not
+                    x.refund_invoice_id.tbai_cancellation_id
                 )
             )
-            tbai_invoices._tbai_build_invoice()
+        )
+        tbai_invoices._tbai_build_invoice()
         return res
 
     @api.model
     def _get_refund_common_fields(self):
         refund_common_fields = super()._get_refund_common_fields()
-        refund_common_fields.append('tbai_substitution_invoice_id')
         refund_common_fields.append('company_id')
         return refund_common_fields
 

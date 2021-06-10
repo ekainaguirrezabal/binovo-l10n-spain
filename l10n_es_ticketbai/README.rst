@@ -71,7 +71,7 @@ Usage
 
     * Parcial: se genera el fichero y se firma al validar la factura rectificativa. La factura se ha tenido que generar desde el asistente de emitir rectificativa
     * Total: se genera el fichero y se firma al crear la rectificativa desde el asistente de emitir rectificativa, escogiendo la opción `cancelar`
-  * Sustitución
+  * Sustitución (sólo soportado en caso de sustituir a una factura simplificada)
 
     * Se genera el fichero y se firma al validar la factura. La factura se ha tenido que generar desde el asistente de emitir rectificativa
 * Anulación de factura
