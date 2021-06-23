@@ -203,7 +203,7 @@ class AccountInvoice(models.Model):
             lines = []
             for line in self.invoice_line_ids:
                 lines.append((0, 0, {
-                    'description': line.name,
+                    'description': line.name[:250],
                     'quantity': line.tbai_get_value_cantidad(),
                     'price_unit': "%.8f" % line.price_unit,
                     'discount_amount': line.tbai_get_value_descuento(),
