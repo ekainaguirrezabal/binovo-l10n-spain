@@ -321,8 +321,12 @@ class AccountInvoice(models.Model):
             for invoice in refund_invoices:
                 valid_refund = True
                 error_refund_msg = None
+                if not invoice.refund_invoice_id and not invoice.tbai_refund_origin_ids:
+                    valid_refund = False
+                    error_refund_msg = _("Please, specify data for the original invoices that are going to be refunded")
                 if invoice.refund_invoice_id.tbai_invoice_id:
-                    valid_refund = invoice.refund_invoice_id.tbai_invoice_id.state not in ['Pending', 'Sent']
+                    valid_refund = invoice.refund_invoice_id.tbai_invoice_id.state in \
+                                   [TicketBaiInvoiceState.pending.value, TicketBaiInvoiceState.sent.value]
                     if not valid_refund:
                         error_refund_msg = _("Some of the original invoices have related tbai invoices in "
                                              "inconsistent state please fix them beforehand.")
