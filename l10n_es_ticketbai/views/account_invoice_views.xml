@@ -34,7 +34,7 @@
                             </group>
                             <group name="tbai_refund_origin_invoices_data" string="Origin Invoices Data" colspan="4"
                                    attrs="{'invisible': ['|', '|', ('tbai_enabled', '!=', True), ('refund_invoice_id', '!=', False), ('type', '!=', 'out_refund')]}">
-                                <field name="tbai_refund_origin_ids" options="{'no_open':True}" nolabel="1" attrs="{'required': [('tbai_enabled', '=', True), ('refund_invoice_id', '!=', False), ('type', '=', 'out_refund')]}">
+                                <field name="tbai_refund_origin_ids" nolabel="1" attrs="{'readonly': [('state', '!=', 'draft')]}">
                                     <tree editable="bottom">
                                         <field name="account_refund_invoice_id" invisible="1"/>
                                         <field name="number_prefix" string="Invoice Serial"/>

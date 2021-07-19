@@ -722,3 +722,9 @@ msgstr "Fecha de la factura"
 #: model:ir.model.fields,field_description:l10n_es_ticketbai.field_tbai_invoice_refund_origin_expedition_date
 msgid "Expedition Date"
 msgstr "Fecha de la factura"
+
+#. module: l10n_es_ticketbai
+#: code:addons/l10n_es_ticketbai/models/account_invoice.py:326
+#, python-format
+msgid "Please, specify data for the original invoices that are going to be refunded"
+msgstr "Por favor, introduzca la información de las facturas originales a rectificar."
