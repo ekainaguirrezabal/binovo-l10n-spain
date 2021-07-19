@@ -17,4 +17,4 @@ access_tbai_invoice_account_invoice,tbai.invoice account.invoice,l10n_es_ticketb
 access_tbai_response_account_invoice,tbai.response account.invoice,l10n_es_ticketbai_api.model_tbai_response,account.group_account_invoice,1,0,0,0
 access_tbai_response_message_account_invoice,tbai.response.message account.invoice,l10n_es_ticketbai_api.model_tbai_response_message,account.group_account_invoice,1,0,0,0
 access_tbai_invoice_refund_origin_employee,tbai.invoice.refund.origin base.group_user,model_tbai_invoice_refund_origin,base.group_user,1,0,0,0
-access_tbai_invoice_refund_origin_settings,tbai.invoice.refund.origin base.group_system,model_tbai_invoice_refund_origin,base.group_system,1,1,1,0
+access_tbai_invoice_refund_origin_settings,tbai.invoice.refund.origin base.group_system,model_tbai_invoice_refund_origin,base.group_system,1,1,1,1
