@@ -137,7 +137,8 @@ class XMLSchema:
             signature, xmlsig.constants.TransformSha256, uri='#' + kinfo_id
         )
         xmlsig.template.add_reference(
-            signature, xmlsig.constants.TransformSha256, uri="#" + sp_id
+            signature, xmlsig.constants.TransformSha256, uri="#" + sp_id,
+            uri_type='http://uri.etsi.org/01903#SignedProperties'
         )
         ki = xmlsig.template.ensure_key_info(signature, name=kinfo_id)
         data = xmlsig.template.add_x509_data(ki)
@@ -157,19 +158,21 @@ class XMLSchema:
                       ('etsi:Cert', (),
                        ('etsi:CertDigest', (),
                         ('ds:DigestMethod',
-                         ('Algorithm', 'http://www.w3.org/2000/09/xmldsig#sha256')),
+                         ('Algorithm', 'http://www.w3.org/2001/04/xmlenc#sha256')),
                         ('ds:DigestValue', (),
                          b64encode(ctx.x509.fingerprint(hashes.SHA256())).decode())))),
                      ('etsi:SignaturePolicyIdentifier', (),
                       ('etsi:SignaturePolicyId', (),
                        ('etsi:SigPolicyId', (),
-                        ('etsi:Identifier', (), 'http://ticketbai.eus/politicafirma'),
-                        ('etsi:Description', (), 'Política de Firma TicketBAI 1.0')),
+                        ('etsi:Identifier', (),
+                         'https://www.batuz.eus/fitxategiak/batuz/ticketbai/'
+                         'sinadura_elektronikoaren_zehaztapenak_especificaciones_de_la_firma_electronica_v1_0.pdf'),
+                        ('etsi:Description', (), )),
                        ('etsi:SigPolicyHash', (),
                         ('ds:DigestMethod',
-                         ('Algorithm', 'http://www.w3.org/2000/09/xmldsig#sha256')),
+                         ('Algorithm', 'http://www.w3.org/2001/04/xmlenc#sha256')),
                         ('ds:DigestValue', (),
-                         'lX1xDvBVAsPXkkJ7R07WCVbAm9e0H33I1sCpDtQNkbc='))))))))
+                         'Quzn98x3PMbSHwbUzaj5f5KOpiH0u8bvmwbbbNkO9Es='))))))))
         root.append(signature)
         create_node_tree(signature, [dslist])
         ctx.sign(signature)
