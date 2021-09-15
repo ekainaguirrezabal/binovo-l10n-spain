@@ -95,6 +95,8 @@ class TestL10nEsTicketBAIPoSCommon(TestL10nEsTicketBAI):
         super().setUp()
         self.product_delivery.available_in_pos = True
         self.pos_config = self.env.ref('point_of_sale.pos_config_main')
+        self.pos_config.available_pricelist_ids.write({
+            'currency_id': self.pos_config.currency_id.id})
         self.pos_config.iface_l10n_es_simplified_invoice = True
         self.account_billing.groups_id = \
             [(4, self.env.ref('point_of_sale.group_pos_user').id)]
