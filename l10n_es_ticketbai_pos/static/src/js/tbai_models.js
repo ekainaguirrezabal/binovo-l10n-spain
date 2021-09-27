@@ -201,10 +201,16 @@ odoo.define('l10n_es_ticketbai_pos.tbai_models', function (require) {
         get_tbai_lines_from_json: function (lines_json) {
             var lines = [];
             var line = null;
+            var company = this.pos.company;
+            var description_line = null;
             lines_json.forEach(function (item) {
                 line = item[2];
+                description_line = line.tbai_description.substring(0, 250);
+                if (company.tbai_protected_data && company.tbai_protected_data_txt) {
+                    description_line = company.tbai_protected_data_txt.substring(0, 250);
+                }
                 lines.push({
-                    description: line.tbai_description.substring(0, 250),
+                    description: description_line,
                     quantity: line.qty,
                     price: line.tbai_price_unit,
                     discount: line.discount,

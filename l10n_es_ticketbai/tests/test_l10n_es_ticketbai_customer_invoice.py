@@ -323,3 +323,20 @@ class TestL10nEsTicketBAICustomerInvoice(TestL10nEsTicketBAI):
         self.assertEqual('INV_XYZ/2021/', invoice.tbai_invoice_ids[0].tbai_invoice_refund_ids.number_prefix)
         self.assertEqual('001', invoice.tbai_invoice_ids[0].tbai_invoice_refund_ids.number)
         self.assertEqual('01-01-1901', invoice.tbai_invoice_ids[0].tbai_invoice_refund_ids.expedition_date)
+
+    def test_invoice_lines_protected_data(self):
+        invoice = self.create_draft_invoice(
+            self.account_billing.id, self.fiscal_position_national)
+        invoice.onchange_fiscal_position_id_tbai_vat_regime_key()
+        invoice.compute_taxes()
+        self.main_company.tbai_protected_data = True
+        invoice.action_invoice_open()
+        root, signature_value = \
+            invoice.sudo().tbai_invoice_ids.get_tbai_xml_signed_and_signature_value()
+        res = XMLSchema.xml_is_valid(self.test_xml_invoice_schema_doc, root)
+        self.assertTrue(res)
+        invoice_line_details = root.findall('Factura')[0].findall('DatosFactura')[0].findall('DetallesFactura')[0].\
+            findall('IDDetalleFactura')
+        for invoice_line_detail in invoice_line_details:
+            invoice_line_description = invoice_line_detail.findall('DescripcionDetalle')[0]
+            self.assertEqual(invoice_line_description.text, self.main_company.tbai_protected_data_txt)
