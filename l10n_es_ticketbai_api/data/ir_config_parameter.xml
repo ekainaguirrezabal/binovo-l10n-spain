@@ -5,7 +5,7 @@
     <data noupdate="1">
         <record id="database_ticketbai" model="ir.config_parameter" forcecreate="True">
             <field name="key">database.ticketbai</field>
-            <field name="value"></field>
+            <field name="value" model="ir.config_parameter" eval="obj().env.cr.dbname"/>
         </record>
     </data>
 </odoo>
