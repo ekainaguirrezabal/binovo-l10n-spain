@@ -7,6 +7,7 @@ odoo.define('l10n_es_ticketbai_pos.tbai_models', function (require) {
 
     var core = require('web.core');
     var _t = core._t;
+    var field_utils = require('web.field_utils');
 
     /* A TicketBAI Simplified Invoice represents a customer's order
     to be exported to the Tax Agency.
@@ -138,6 +139,7 @@ odoo.define('l10n_es_ticketbai_pos.tbai_models', function (require) {
             var tbai = {};
             var company = this.pos.company;
             var vat_keys = [this.vat_regime_key];
+            var self = this;
 
             if (order_json !== null && this.number !== null && this.expedition_date !== null) {
                 if (this.vat_regime_key2 !== null) {
@@ -162,7 +164,8 @@ odoo.define('l10n_es_ticketbai_pos.tbai_models', function (require) {
                         operationDate: this.expedition_date,
                     },
                     lines: this.get_tbai_lines_from_json(order_json.lines),
-                    total: order_json.amount_total,
+                    total: field_utils.parse.float(self.pos.chrome.format_currency_no_symbol(order_json.amount_total)),
+                    vatLines: this.get_tbai_vat_lines_from_json(order_json.taxLines),
                     vatKeys: vat_keys,
                 };
                 if (order_json.partner_id) {
@@ -203,6 +206,7 @@ odoo.define('l10n_es_ticketbai_pos.tbai_models', function (require) {
             var line = null;
             var company = this.pos.company;
             var description_line = null;
+            var self = this;
             lines_json.forEach(function (item) {
                 line = item[2];
                 description_line = line.tbai_description.substring(0, 250);
@@ -211,18 +215,35 @@ odoo.define('l10n_es_ticketbai_pos.tbai_models', function (require) {
                 }
                 lines.push({
                     description: description_line,
-                    quantity: line.qty,
-                    price: line.tbai_price_unit,
-                    discount: line.discount,
-                    discount_amount:
-                        line.qty * line.tbai_price_unit * line.discount / 100.0,
+                    quantity: field_utils.parse.float(self.pos.chrome.format_currency_no_symbol(line.qty)),
+                    price: field_utils.parse.float(self.pos.chrome.format_currency_no_symbol(line.tbai_price_unit)),
+                    discount: field_utils.parse.float(self.pos.chrome.format_currency_no_symbol(line.discount)),
+                    discountAmount:
+                        field_utils.parse.float(
+                            self.pos.chrome.format_currency_no_symbol(
+                                line.qty * line.tbai_price_unit * line.discount / 100.0)),
                     vat: line.tbai_vat_amount,
-                    amount: line.tbai_price_without_tax,
-                    amountWithVat: line.tbai_price_with_tax,
+                    amount: field_utils.parse.float(
+                        self.pos.chrome.format_currency_no_symbol(line.tbai_price_without_tax)),
+                    amountWithVat: field_utils.parse.float(
+                        self.pos.chrome.format_currency_no_symbol(line.tbai_price_with_tax))
                 });
             });
             return lines;
         },
+        get_tbai_vat_lines_from_json: function(vatLinesJson) {
+            var vatLines = [];
+            var self = this;
+            vatLinesJson.forEach(function(vatLineJson) {
+                var vatLine = vatLineJson[2];
+                vatLines.push({
+                    base: field_utils.parse.float(self.pos.chrome.format_currency_no_symbol(vatLine.baseAmount)),
+                    rate: vatLine.tax.amount,
+                    amount: field_utils.parse.float(self.pos.chrome.format_currency_no_symbol(vatLine.amount)),
+                });
+            });
+            return vatLines;
+        }
     });
 
     return {

@@ -347,6 +347,13 @@ odoo.define('l10n_es_ticketbai_pos.models', function (require) {
             var tbai_inv;
             var json = order_super.export_as_JSON.apply(this, arguments);
             if (this.pos.company.tbai_enabled) {
+                var taxLines = [];
+                var order = this;
+                this.get_tax_details().forEach(function (taxDetail) {
+                    var taxLineDict = taxDetail;
+                    taxLineDict.baseAmount = order.get_base_by_tax()[taxDetail.tax.id];
+                    taxLines.push([0, 0, taxLineDict]);});
+                json.taxLines = taxLines;
                 tbai_inv = this.tbai_simplified_invoice || null;
                 if (tbai_inv !== null) {
                     datas = tbai_inv.datas;
