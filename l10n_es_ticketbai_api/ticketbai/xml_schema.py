@@ -85,7 +85,7 @@ class XMLSchema:
         return valid
 
     @staticmethod
-    def sign(root, certificate):
+    def sign(root, certificate, tax_agency):
         """
         Sign XML with PKCS #12
         :author: Victor Laskurain <blaskurain@binovo.es>
@@ -165,14 +165,13 @@ class XMLSchema:
                       ('etsi:SignaturePolicyId', (),
                        ('etsi:SigPolicyId', (),
                         ('etsi:Identifier', (),
-                         'https://www.batuz.eus/fitxategiak/batuz/ticketbai/'
-                         'sinadura_elektronikoaren_zehaztapenak_especificaciones_de_la_firma_electronica_v1_0.pdf'),
+                         tax_agency.sign_file_url),
                         ('etsi:Description', (), )),
                        ('etsi:SigPolicyHash', (),
                         ('ds:DigestMethod',
                          ('Algorithm', 'http://www.w3.org/2001/04/xmlenc#sha256')),
                         ('ds:DigestValue', (),
-                         'Quzn98x3PMbSHwbUzaj5f5KOpiH0u8bvmwbbbNkO9Es='))))))))
+                         tax_agency.sign_file_hash))))))))
         root.append(signature)
         create_node_tree(signature, [dslist])
         ctx.sign(signature)
