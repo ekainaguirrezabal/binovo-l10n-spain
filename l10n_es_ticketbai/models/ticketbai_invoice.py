@@ -110,5 +110,3 @@ class TicketBAIInvoiceRefundOrigin(models.Model):
                     raise exceptions.ValidationError(_(
                         "Invoice: number %s prefix %s invoice_date %s exists. Create a credit note from this invoice."
                     ) % (record.number, record.number_prefix, record.expedition_date))
-
-

@@ -53,9 +53,10 @@ class AccountInvoice(models.Model):
         comodel_name='tbai.vat.regime.key', string='VAT Regime 2nd Key', copy=True)
     tbai_vat_regime_key3 = fields.Many2one(
         comodel_name='tbai.vat.regime.key', string='VAT Regime 3rd Key', copy=True)
-    tbai_refund_origin_ids = fields.One2many(comodel_name='tbai.invoice.refund.origin',
-                                             inverse_name='account_refund_invoice_id',
-                                             string='TicketBAI Refund Origin References')
+    tbai_refund_origin_ids = fields.One2many(
+        comodel_name='tbai.invoice.refund.origin',
+        inverse_name='account_refund_invoice_id',
+        string='TicketBAI Refund Origin References')
 
     @api.multi
     @api.constrains('state')
@@ -80,8 +81,10 @@ class AccountInvoice(models.Model):
         if vals and vals.get('company_id', False):
             company = self.env['res.company'].browse(vals['company_id'])
             if company.tbai_enabled:
-                filter_refund = self._context.get('filter_refund', False) or self._context.get('type', False) == 'out_refund'
-                invoice_type = vals.get('type', False) or self._context.get('type', False)
+                filter_refund = self._context.get('filter_refund', False) \
+                    or self._context.get('type', False) == 'out_refund'
+                invoice_type = vals.get('type', False) \
+                    or self._context.get('type', False)
                 if filter_refund and invoice_type:
                     if 'out_refund' == invoice_type:
                         if not vals.get('tbai_refund_type', False):
@@ -151,28 +154,29 @@ class AccountInvoice(models.Model):
     def tbai_prepare_invoice_values(self):
 
         def tbai_prepare_refund_values():
-            refunded_invoice = self.refund_invoice_id
-            if refunded_invoice:
+            refunded_inv = self.refund_invoice_id
+            if refunded_inv:
                 vals.update({
                     'is_invoice_refund': True,
                     'refund_code': self.tbai_refund_key,
                     'refund_type': self.tbai_refund_type,
                     'tbai_invoice_refund_ids': [(0, 0, {
-                        'number_prefix': refunded_invoice.tbai_get_value_serie_factura(),
-                        'number': refunded_invoice.tbai_get_value_num_factura(),
+                        'number_prefix': refunded_inv.tbai_get_value_serie_factura(),
+                        'number': refunded_inv.tbai_get_value_num_factura(),
                         'expedition_date':
-                            refunded_invoice.tbai_get_value_fecha_expedicion_factura()
+                            refunded_inv.tbai_get_value_fecha_expedicion_factura()
                     })]
                 })
             else:
                 if self.tbai_refund_origin_ids:
                     refund_id_dicts = []
                     for refund_origin_id in self.tbai_refund_origin_ids:
-                        refund_id_dicts.append((0, 0,
-                                                {'number_prefix': refund_origin_id.number_prefix,
-                                                 'number': refund_origin_id.number,
-                                                 'expedition_date': refund_origin_id.expedition_date
-                                                 }))
+                        refund_id_dicts.append(
+                            (0, 0,
+                             {'number_prefix': refund_origin_id.number_prefix,
+                              'number': refund_origin_id.number,
+                              'expedition_date': refund_origin_id.expedition_date
+                             }))
                     vals.update({
                         'is_invoice_refund': True,
                         'refund_code': self.tbai_refund_key,
@@ -225,7 +229,8 @@ class AccountInvoice(models.Model):
             lines = []
             for line in self.invoice_line_ids:
                 description_line = line.name[:250]
-                if self.company_id.tbai_protected_data and self.company_id.tbai_protected_data_txt:
+                if self.company_id.tbai_protected_data \
+                   and self.company_id.tbai_protected_data_txt:
                     description_line = self.company_id.tbai_protected_data_txt[:250]
                 lines.append((0, 0, {
                     'description': description_line,
@@ -331,16 +336,20 @@ class AccountInvoice(models.Model):
                 error_refund_msg = None
                 if not invoice.refund_invoice_id and not invoice.tbai_refund_origin_ids:
                     valid_refund = False
-                    error_refund_msg = _("Please, specify data for the original invoices that are going to be refunded")
+                    error_refund_msg = _("Please, specify data for the original"
+                                         " invoices that are going to be refunded")
                 if invoice.refund_invoice_id.tbai_invoice_id:
                     valid_refund = invoice.refund_invoice_id.tbai_invoice_id.state in \
-                                   [TicketBaiInvoiceState.pending.value, TicketBaiInvoiceState.sent.value]
+                                   [TicketBaiInvoiceState.pending.value,
+                                    TicketBaiInvoiceState.sent.value]
                     if not valid_refund:
-                        error_refund_msg = _("Some of the original invoices have related tbai invoices in "
-                                             "inconsistent state please fix them beforehand.")
+                        error_refund_msg = _(
+                            "Some of the original invoices have related tbai invoices in "
+                            "inconsistent state please fix them beforehand.")
                 if valid_refund and invoice.refund_invoice_id.tbai_cancellation_id:
                     valid_refund = False
-                    error_refund_msg = _("Some of the original invoices have related tbai cancelled invoices")
+                    error_refund_msg = _("Some of the original invoices "
+                                         "have related tbai cancelled invoices")
                 if not valid_refund:
                     raise exceptions.ValidationError(error_refund_msg)
 
@@ -353,9 +362,11 @@ class AccountInvoice(models.Model):
         #  but a normal customer invoice.
         # There is no 'by substitution' credit note, only 'by differences'.
         tbai_invoices = self.sudo().env['account.invoice']
-        tbai_invoices |= self.sudo().filtered(lambda x: x.tbai_enabled and 'out_invoice' == x.type)
-        refund_invoices = self.sudo().filtered(lambda x: x.tbai_enabled and 'out_refund' == x.type and
-                                                         x.tbai_refund_type == RefundType.differences.value)
+        tbai_invoices |= self.sudo().filtered(
+            lambda x: x.tbai_enabled and 'out_invoice' == x.type)
+        refund_invoices = self.sudo().filtered(
+            lambda x: x.tbai_enabled and 'out_refund' == x.type and
+            x.tbai_refund_type == RefundType.differences.value)
 
         validate_refund_invoices()
         tbai_invoices |= refund_invoices

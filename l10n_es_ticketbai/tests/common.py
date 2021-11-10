@@ -30,7 +30,11 @@ class TestL10nEsTicketBAI(TestL10nEsTicketBAIAPI):
                                   self.partner_manager.id])]
         })
 
-    def create_draft_invoice(self, uid, fp, company_id=None, invoice_type='out_invoice', context={}):
+    def create_draft_invoice(
+            self, uid, fp, company_id=None, invoice_type='out_invoice', context=None
+    ):
+        if context == None:
+            context = {}
         invoice = self.env['account.invoice'].sudo(uid).with_context(context).create({
             'partner_id': self.partner.id,
             'currency_id': self.env.ref('base.EUR').id,
