@@ -9,6 +9,7 @@ from odoo.addons.l10n_es_ticketbai_api.ticketbai.xml_schema import XMLSchema
 
 _logger = logging.getLogger(__name__)
 
+
 @common.at_install(False)
 @common.post_install(True)
 class TestL10nEsTicketBAICustomerInvoice(TestL10nEsTicketBAI):
@@ -376,8 +377,9 @@ class TestL10nEsTicketBAICustomerInvoice(TestL10nEsTicketBAI):
 
     def test_invoice_out_refund_from_origin_invoice_exists(self):
         ctx = {'type': 'out_refund'}
-        invoice = self.create_draft_invoice(self.account_billing.id,
-                                           self.fiscal_position_national)
+        invoice = self.create_draft_invoice(
+            self.account_billing.id,
+            self.fiscal_position_national)
         invoice.onchange_fiscal_position_id_tbai_vat_regime_key()
         invoice.date_invoice = '1901-01-01'
         invoice.compute_taxes()
@@ -408,10 +410,11 @@ class TestL10nEsTicketBAICustomerInvoice(TestL10nEsTicketBAI):
         invoice_line_details = root\
             .findall('Factura')[0]\
             .findall('DatosFactura')[0]\
-            .findall('DetallesFactura')[0].\
-            findall('IDDetalleFactura')
+            .findall('DetallesFactura')[0]\
+            .findall('IDDetalleFactura')
         for invoice_line_detail in invoice_line_details:
-            invoice_line_description = invoice_line_detail.findall('DescripcionDetalle')[0]
+            invoice_line_description = invoice_line_detail\
+                .findall('DescripcionDetalle')[0]
             self.assertEqual(
                 invoice_line_description.text,
                 self.main_company.tbai_protected_data_txt)

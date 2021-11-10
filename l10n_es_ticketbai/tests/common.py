@@ -33,7 +33,7 @@ class TestL10nEsTicketBAI(TestL10nEsTicketBAIAPI):
     def create_draft_invoice(
             self, uid, fp, company_id=None, invoice_type='out_invoice', context=None
     ):
-        if context == None:
+        if not context:
             context = {}
         invoice = self.env['account.invoice'].sudo(uid).with_context(context).create({
             'partner_id': self.partner.id,

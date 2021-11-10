@@ -45,7 +45,7 @@ class ResPartner(models.Model):
             country_code = country_code
         elif self.country_id:
             country_code = self.country_id.code
-        if country_code is None:
+        if not country_code:
             raise exceptions.ValidationError(_("Incorrect country code."))
         return country_code.upper()
 

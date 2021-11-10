@@ -548,11 +548,12 @@ class TicketBAIInvoice(models.Model):
         try:
             self.send_pending_invoices_impl()
         except Exception as e:
-            _logger.info('Exception sending invoices:', exc_info = e)
+            _logger.warning('Exception sending invoices:', exc_info=e)
 
     @api.model
     def send_pending_invoices_impl(self):
-        config_ddbb = self.env['ir.config_parameter'].sudo().get_param('database.ticketbai')
+        Parameter = self.env['ir.config_parameter']
+        config_ddbb = Parameter.sudo().get_param('database.ticketbai')
         ticketbai_ddbb = self.env.cr.dbname
         if config_ddbb != ticketbai_ddbb:
             _logger.info(_("The ticketbai database is not active for sending invoices"))

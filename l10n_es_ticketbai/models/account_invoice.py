@@ -172,11 +172,11 @@ class AccountInvoice(models.Model):
                     refund_id_dicts = []
                     for refund_origin_id in self.tbai_refund_origin_ids:
                         refund_id_dicts.append(
-                            (0, 0,
-                             {'number_prefix': refund_origin_id.number_prefix,
-                              'number': refund_origin_id.number,
-                              'expedition_date': refund_origin_id.expedition_date
-                             }))
+                            (0, 0, {
+                                'number_prefix': refund_origin_id.number_prefix,
+                                'number': refund_origin_id.number,
+                                'expedition_date': refund_origin_id.expedition_date
+                            }))
                     vals.update({
                         'is_invoice_refund': True,
                         'refund_code': self.tbai_refund_key,
@@ -340,12 +340,14 @@ class AccountInvoice(models.Model):
                                          " invoices that are going to be refunded")
                 if invoice.refund_invoice_id.tbai_invoice_id:
                     valid_refund = invoice.refund_invoice_id.tbai_invoice_id.state in \
-                                   [TicketBaiInvoiceState.pending.value,
-                                    TicketBaiInvoiceState.sent.value]
+                        [
+                            TicketBaiInvoiceState.pending.value,
+                            TicketBaiInvoiceState.sent.value
+                        ]
                     if not valid_refund:
                         error_refund_msg = _(
-                            "Some of the original invoices have related tbai invoices in "
-                            "inconsistent state please fix them beforehand.")
+                            "Some of the original invoices have related tbai invoices "
+                            "in inconsistent state please fix them beforehand.")
                 if valid_refund and invoice.refund_invoice_id.tbai_cancellation_id:
                     valid_refund = False
                     error_refund_msg = _("Some of the original invoices "

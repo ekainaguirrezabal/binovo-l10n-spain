@@ -55,12 +55,18 @@ class TicketBAIInvoiceRefundOrigin(models.Model):
     account_refund_invoice_id = fields.Many2one(comodel_name='account.invoice',
                                                 domain=[('type', '=', 'out_refund')],
                                                 required=True)
-    number = fields.Char(required=True, help='The number of the invoice name e.g. if the invoice name is INV/2021/00001'
-                                             ' then the number is 00001')
-    number_prefix = fields.Char(default='', help='Number prefix of this invoice name e.g. if the invoice name is'
-                                                 ' INV/2021/00001 then the prefix is INV/2021/, '
-                                                 'ending back slash included')
-    expedition_date = fields.Char(required=True, help="Expected string date format: %dd-%mm-%yyyy")
+    number = fields.Char(
+        required=True,
+        help='The number of the invoice name e.g. if the invoice name is '
+        'INV/2021/00001 then the number is 00001')
+    number_prefix = fields.Char(
+        default='',
+        help='Number prefix of this invoice name e.g. if the invoice name is'
+        ' INV/2021/00001 then the prefix is INV/2021/, '
+        'ending back slash included')
+    expedition_date = fields.Char(
+        required=True,
+        help="Expected string date format: %dd-%mm-%yyyy")
 
     @api.multi
     @api.constrains('number')
@@ -102,11 +108,15 @@ class TicketBAIInvoiceRefundOrigin(models.Model):
             if invoice_number and record.expedition_date:
                 record._check_expedition_date()
                 invoice_date = datetime.strptime(record.expedition_date, "%d-%m-%Y")
+                date_invoice = invoice_date.date().strftime('%Y-%m-%d')
                 domain_invoice = [('number', '=', invoice_number),
-                                  ('date_invoice', '=', invoice_date.date().strftime('%Y-%m-%d'))
+                                  ('date_invoice', '=', date_invoice)
                                   ]
-                account_invoice = self.sudo().env['account.invoice'].search(domain_invoice)
+                account_invoice = self.sudo()\
+                    .env['account.invoice']\
+                    .search(domain_invoice)
                 if account_invoice:
                     raise exceptions.ValidationError(_(
-                        "Invoice: number %s prefix %s invoice_date %s exists. Create a credit note from this invoice."
+                        "Invoice: number %s prefix %s invoice_date %s exists. Create a "
+                        "credit note from this invoice."
                     ) % (record.number, record.number_prefix, record.expedition_date))

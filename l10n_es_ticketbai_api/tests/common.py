@@ -498,7 +498,7 @@ class TestL10nEsTicketBAIAPI(common.TransactionCase):
         self.refund_number_prefix = '%d/' % randrange(1, 10 ** 19)
         schemas_version_dirname = XMLSchema.schemas_version_dirname
         script_dirpath = os.path.abspath(os.path.dirname(__file__))
-        schemas_dirpath = os.path.join(script_dirpath, '../ticketbai/schemas')
+        schemas_dirpath = os.path.join(script_dirpath, 'schemas')
         url = pathname2url(os.path.join(schemas_dirpath, 'catalog.xml'))
         catalog_path = "file:%s" % url
         os.environ['XML_CATALOG_FILES'] = catalog_path
