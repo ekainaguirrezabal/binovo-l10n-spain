@@ -18,6 +18,12 @@ from odoo.tests import common
 @common.post_install(True)
 class TestL10nEsTicketBAIAPI(common.TransactionCase):
 
+    catalogs = [
+        'file:%s'%os.path.join(
+            os.path.abspath(
+                os.path.dirname(__file__)), 'schemas/catalog.xml')
+    ]
+
     def _send_to_tax_agency(self, invoice):
         pending_invoices = self.env['tbai.invoice'].get_next_pending_invoice(
             company_id=self.main_company.id, limit=0)
@@ -490,6 +496,11 @@ class TestL10nEsTicketBAIAPI(common.TransactionCase):
 
     def setUp(self):
         super().setUp()
+        # can only set this environment variable once because lxml
+        # loads it only at startup. Luckily having several catalogs is
+        # supported so we provide the catalogs variable for related
+        # addons to plug any required additional catalog.
+        os.environ['XML_CATALOG_FILES'] = ' '.join(self.catalogs)
         test_dir_path = os.path.abspath(os.path.dirname(__file__))
         self.company_values_json_filepath = os.path.join(test_dir_path, 'company.json')
         # Disabled by default for automatic tests
@@ -499,9 +510,6 @@ class TestL10nEsTicketBAIAPI(common.TransactionCase):
         schemas_version_dirname = XMLSchema.schemas_version_dirname
         script_dirpath = os.path.abspath(os.path.dirname(__file__))
         schemas_dirpath = os.path.join(script_dirpath, 'schemas')
-        url = pathname2url(os.path.join(schemas_dirpath, 'catalog.xml'))
-        catalog_path = "file:%s" % url
-        os.environ['XML_CATALOG_FILES'] = catalog_path
         # Load XSD file with XADES imports
         test_xml_invoice_filepath = os.path.abspath(
             os.path.join(schemas_dirpath,
