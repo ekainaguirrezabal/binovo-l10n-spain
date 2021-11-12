@@ -3,12 +3,12 @@
 from odoo import models, fields, _, exceptions, api
 from collections import OrderedDict
 import base64
+import gzip
 from datetime import datetime
 from lxml import etree
 from ..lroe.lroe_xml_schema import LROEXMLSchema,\
     LROEXMLSchemaModeNotSupported,\
     LROEOperationTypeEnum
-from .lroe_gzip import LROEGzip
 from enum import Enum
 
 
@@ -52,7 +52,7 @@ class LROEOperation(models.Model):
     _description = "LROE Operation"
     _order = 'id desc'
 
-    name = fields.Char(compute='compute_lroe_operation_name', store=True)
+    name = fields.Char(compute='_compute_lroe_operation_name', store=True)
     company_id = fields.Many2one('res.company', required=True)
     type = fields.Selection([
         (LROEOperationEnum.create.value, 'Create'),
@@ -90,7 +90,7 @@ class LROEOperation(models.Model):
                                    string="Operation global responses")
 
     @api.depends('model', 'type')
-    def compute_lroe_operation_name(self):
+    def _compute_lroe_operation_name(self):
         for lroe_operation in self:
             lroe_operation.name = lroe_operation._get_printed_report_name()
 
@@ -112,11 +112,12 @@ class LROEOperation(models.Model):
     @api.multi
     def set_trx_gzip_file(self):
         self.ensure_one()
-        data_length, data_content = LROEGzip.compress_lroe_xml_data(self.xml_datas)
+        data_content = gzip.compress(base64.b64decode(self.xml_datas))
+        data_length = len(data_content)
         self.trx_gzip_file = base64.b64encode(data_content)
         self.trx_gzip_fname = self.xml_datas_fname + '.gz'
-        self.trx_gzip_fsize = int(data_length)
-        return data_length, data_content
+        self.trx_gzip_fsize = data_length
+        return str(data_length), data_content
 
     def build_ingresos(self, lroe_op_enum):
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright (2021) Binovo IT Human Project SL
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 from lxml import etree
@@ -8,7 +7,6 @@ from enum import Enum
 _logger = logging.getLogger(__name__)
 
 try:
-    import xmlsig
     import xmltodict
 except(ImportError, IOError) as err:
     _logger.error(err)
@@ -55,28 +53,44 @@ class LROEXMLSchema:
 
     def __init__(self, mode):
         if mode == LROEOperationTypeEnum.alta_sg_invoice_pj_240.value:
-            lroe_operation_ns = "https://www.batuz.eus/fitxategiak/batuz/LROE/esquemas/LROE_PJ_240_1_1_FacturasEmitidas_ConSG_AltaPeticion_V1_0_2.xsd"
+            lroe_operation_ns =\
+                "https://www.batuz.eus/fitxategiak/batuz/LROE/esquemas/"\
+                "LROE_PJ_240_1_1_FacturasEmitidas_ConSG_AltaPeticion_V1_0_2.xsd"
             root_element = 'LROEPJ240FacturasEmitidasConSGAltaPeticion'
         elif mode == LROEOperationTypeEnum.alta_sg_invoice_pf_140.value:
-            lroe_operation_ns = "https://www.batuz.eus/fitxategiak/batuz/LROE/esquemas/LROE_PF_140_1_1_Ingresos_ConfacturaConSG_AltaPeticion_V1_0_2.xsd"
+            lroe_operation_ns =\
+                "https://www.batuz.eus/fitxategiak/batuz/LROE/esquemas/"\
+                "LROE_PF_140_1_1_Ingresos_ConfacturaConSG_AltaPeticion_V1_0_2.xsd"
             root_element = 'LROEPF140IngresosConFacturaConSGAltaPeticion'
         elif mode == LROEOperationTypeEnum.cancel_sg_invoice_pj_240.value:
-            lroe_operation_ns = "https://www.batuz.eus/fitxategiak/batuz/LROE/esquemas/LROE_PJ_240_1_1_FacturasEmitidas_ConSG_AnulacionPeticion_V1_0_0.xsd"
+            lroe_operation_ns =\
+                "https://www.batuz.eus/fitxategiak/batuz/LROE/esquemas/"\
+                "LROE_PJ_240_1_1_FacturasEmitidas_ConSG_AnulacionPeticion_V1_0_0.xsd"
             root_element = 'LROEPJ240FacturasEmitidasConSGAnulacionPeticion'
         elif mode == LROEOperationTypeEnum.cancel_sg_invoice_pf_140.value:
-            lroe_operation_ns = "https://www.batuz.eus/fitxategiak/batuz/LROE/esquemas/LROE_PF_140_1_1_Ingresos_ConfacturaConSG_AnulacionPeticion_V1_0_0.xsd"
+            lroe_operation_ns =\
+                "https://www.batuz.eus/fitxategiak/batuz/LROE/esquemas"\
+                "/LROE_PF_140_1_1_Ingresos_ConfacturaConSG_AnulacionPeticion_V1_0_0.xsd"
             root_element = 'LROEPF140IngresosConFacturaConSGAnulacionPeticion'
         elif mode == LROEOperationTypeEnum.resp_alta_sg_invoice_pj_240.value:
-            lroe_operation_ns = "https://www.batuz.eus/fitxategiak/batuz/LROE/esquemas/LROE_PJ_240_1_1_FacturasEmitidas_ConSG_AltaRespuesta_V1_0_1.xsd"
+            lroe_operation_ns =\
+                "https://www.batuz.eus/fitxategiak/batuz/LROE/esquemas/"\
+                "LROE_PJ_240_1_1_FacturasEmitidas_ConSG_AltaRespuesta_V1_0_1.xsd"
             root_element = 'LROEPJ240FacturasEmitidasConSGAltaRespuesta'
         elif mode == LROEOperationTypeEnum.resp_alta_sg_invoice_pf_140.value:
-            lroe_operation_ns = "https://www.batuz.eus/fitxategiak/batuz/LROE/esquemas/LROE_PF_140_1_1_Ingresos_ConfacturaConSG_AltaRespuesta_V1_0_2.xsd"
+            lroe_operation_ns =\
+                "https://www.batuz.eus/fitxategiak/batuz/LROE/esquemas/"\
+                "LROE_PF_140_1_1_Ingresos_ConfacturaConSG_AltaRespuesta_V1_0_2.xsd"
             root_element = 'LROEPF140IngresosConFacturaConSGAltaRespuesta'
         elif mode == LROEOperationTypeEnum.resp_cancel_sg_invoice_pj_240.value:
-            lroe_operation_ns = "https://www.batuz.eus/fitxategiak/batuz/LROE/esquemas/LROE_PJ_240_1_1_FacturasEmitidas_ConSG_AnulacionRespuesta_V1_0_0.xsd"
+            lroe_operation_ns =\
+                "https://www.batuz.eus/fitxategiak/batuz/LROE/esquemas/"\
+                "LROE_PJ_240_1_1_FacturasEmitidas_ConSG_AnulacionRespuesta_V1_0_0.xsd"
             root_element = 'LROEPJ240FacturasEmitidasConSGAnulacionRespuesta'
         elif mode == LROEOperationTypeEnum.resp_cancel_sg_invoice_pf_140.value:
-            lroe_operation_ns = "https://www.batuz.eus/fitxategiak/batuz/LROE/esquemas/LROE_PF_140_1_1_Ingresos_ConfacturaConSG_AnulacionRespuesta_V1_0_0.xsd"
+            lroe_operation_ns =\
+                "https://www.batuz.eus/fitxategiak/batuz/LROE/esquemas/"\
+                "LROE_PF_140_1_1_Ingresos_ConfacturaConSG_AnulacionRespuesta_V1_0_0.xsd"
             root_element = 'LROEPF140IngresosConFacturaConSGAnulacionRespuesta'
         else:
             raise LROEXMLSchemaModeNotSupported(
@@ -96,13 +110,7 @@ class LROEXMLSchema:
         :return: bool
         """
         schema = etree.XMLSchema(test_xmlschema_doc)
-        try:
-            schema.assertValid(root)
-            valid = True
-        except etree.DocumentInvalid as error:
-            _logger.exception(error)
-            valid = False
-        return valid
+        return schema(root)
 
     def create_node_from_dict(self, xml_root, key, value):
         if isinstance(value, dict):

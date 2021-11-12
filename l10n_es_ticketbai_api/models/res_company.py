@@ -95,8 +95,8 @@ class ResCompany(models.Model):
 
     @api.onchange('tbai_tax_agency_id')
     def onchange_tbai_tax_agency(self):
-        if not (self.tbai_tax_agency_id.test_qr_base_url and \
-                self.tbai_tax_agency_id.test_rest_url_invoice and \
+        if not (self.tbai_tax_agency_id.test_qr_base_url and
+                self.tbai_tax_agency_id.test_rest_url_invoice and
                 self.tbai_tax_agency_id.test_rest_url_cancellation):
             self.tbai_test_available = False
             self.tbai_test_enabled = False

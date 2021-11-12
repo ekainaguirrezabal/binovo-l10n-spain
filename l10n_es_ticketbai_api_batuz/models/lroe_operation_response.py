@@ -10,7 +10,6 @@ from .lroe_operation import LROEOperationEnum, LROEModelEnum
 from odoo.addons.l10n_es_ticketbai_api.models.ticketbai_response\
     import TicketBaiResponseState
 from odoo.exceptions import ValidationError
-from .lroe_gzip import LROEGzip
 
 
 class LROEOperationResponseState(Enum):
@@ -75,9 +74,12 @@ class LROEOperationResponse(models.Model):
     def prepare_lroe_error_values(self, lroe_operation, msg, **kwargs):
         values = kwargs
         tbai_response_model = self.env['tbai.response']
-        tbai_response_dict = {'tbai_invoice_id': lroe_operation.tbai_invoice_ids[0].id,
-                              'state': LROEOperationResponse.get_tbai_state(
-                                  LROEOperationResponseState.REQUEST_ERROR.value)}
+        tbai_response_dict = {
+            'tbai_invoice_id': lroe_operation.tbai_invoice_ids[0].id,
+            'state': LROEOperationResponse.get_tbai_state(
+                LROEOperationResponseState.REQUEST_ERROR.value
+            )
+        }
         tbai_response_obj = tbai_response_model.create(tbai_response_dict)
         values.update({
             'lroe_operation_id': lroe_operation.id,
@@ -97,7 +99,8 @@ class LROEOperationResponse(models.Model):
             if response_line_record_state not in [
                 LROEOperationResponseLineState.CORRECT.value,
                 LROEOperationResponseLineState.CORRECT_WITH_ERRORS.value,
-                LROEOperationResponseLineState.INCORRECT.value]:
+                LROEOperationResponseLineState.INCORRECT.value
+            ]:
                 raise ValidationError(_('LROEOperationResponseLineState not VALID !'))
 
         def get_lroe_response_xml_header():
@@ -139,9 +142,6 @@ class LROEOperationResponse(models.Model):
             return operation_type, xml_schema
 
         def set_tbai_response_lroe_line():
-            response_line_invoice_data = response_line_record\
-                .get('Identificador')\
-                .get('IDFactura')
             response_line_record_data = response_line_record.get('SituacionRegistro')
             response_line_record_state = response_line_record_data.get('EstadoRegistro')
             validate_response_line_state(response_line_record_state)
@@ -185,7 +185,7 @@ class LROEOperationResponse(models.Model):
             tbai_response_model = self.env['tbai.response']
             tbai_response_dict = {
                 'tbai_invoice_id': lroe_operation.tbai_invoice_ids[0].id,
-                'state':LROEOperationResponse.get_tbai_state(
+                'state': LROEOperationResponse.get_tbai_state(
                     LROEOperationResponseState.REQUEST_ERROR.value)
             }
             for key in kwargs:
@@ -195,21 +195,22 @@ class LROEOperationResponse(models.Model):
                 'lroe_operation_id': lroe_operation.id,
                 'state': LROEOperationResponseState.REQUEST_ERROR.value,
                 'code': lroe_srv_response_code if lroe_srv_response_code else errno,
-                'description': lroe_srv_response_message\
-                    if lroe_srv_response_message else strerror,
+                'description': lroe_srv_response_message
+                if lroe_srv_response_message else strerror,
                 'response_line_ids': [(0, 0, {
                     'state': LROEOperationResponseLineState.INCORRECT.value,
-                    'code': lroe_srv_response_code\
-                        if lroe_srv_response_code else errno,
-                    'description': lroe_srv_response_message \
-                        if lroe_srv_response_message else strerror,
+                    'code': lroe_srv_response_code
+                    if lroe_srv_response_code else errno,
+                    'description': lroe_srv_response_message
+                    if lroe_srv_response_message else strerror,
                     'tbai_response_id': tbai_response_obj.id
                 })]
             })
         else:
-            values.update({'lroe_operation_id': lroe_operation.id,
-                           'state': lroe_srv_response_type,
-                           })
+            values.update({
+                'lroe_operation_id': lroe_operation.id,
+                'state': lroe_srv_response_type,
+            })
             if lroe_srv_response_type in [
                     LROEOperationResponseState.CORRECT.value,
                     LROEOperationResponseState.PARTIALLY_CORRECT.value]:
@@ -223,12 +224,10 @@ class LROEOperationResponse(models.Model):
                 values.update({
                     'lroe_record_date': lroe_srv_response_date,
                     'code': lroe_srv_response_code if lroe_srv_response_code else errno,
-                    'description': lroe_srv_response_message\
-                        if lroe_srv_response_message else strerror
+                    'description': lroe_srv_response_message
+                    if lroe_srv_response_message else strerror
                 })
-            xml_data_length, xml_data = LROEGzip.decompress_lroe_gzip_xml_data(
-                lroe_srv_response.data
-            )
+            xml_data = lroe_srv_response.data
             if xml_data:
                 values.update({
                     'xml': base64.encodebytes(xml_data),
@@ -259,10 +258,10 @@ class LROEOperationResponse(models.Model):
                 values.update({
                     'response_line_ids': [(0, 0, {
                         'state': LROEOperationResponseLineState.INCORRECT.value,
-                        'code': lroe_srv_response_code\
-                            if lroe_srv_response_code else errno,
-                        'description': lroe_srv_response_message\
-                            if lroe_srv_response_message else strerror,
+                        'code': lroe_srv_response_code
+                        if lroe_srv_response_code else errno,
+                        'description': lroe_srv_response_message
+                        if lroe_srv_response_message else strerror,
                         'tbai_response_id': tbai_response_obj.id
                     })]
                 })
@@ -300,12 +299,12 @@ class LROEOperationResponseLine(models.Model):
     code = fields.Char()
     description = fields.Char()
     response_message = fields.Char(
-        compute='compute_line_message',
+        compute='_compute_line_message',
         string="LROE Response Message")
 
     @api.multi
     @api.depends('code', 'description')
-    def compute_line_message(self):
+    def _compute_line_message(self):
         for response_line in self:
             if response_line.code and response_line.description:
                 response_line.response_message = response_line.code\

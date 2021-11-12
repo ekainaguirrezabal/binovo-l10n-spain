@@ -1,16 +1,16 @@
-# -*- coding: utf-8 -*-
 # Copyright (2021) Binovo IT Human Project SL
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import os
+import base64
 import datetime
+import gzip
 from odoo.tests import common
 from ..models.lroe_operation import LROEOperationEnum, LROEModelEnum
 from ..models.lroe_operation_response\
     import LROEOperationResponseState, LROEOperationResponseLineState
 from ..lroe import lroe_api
 from odoo.addons.l10n_es_ticketbai_api.tests.common import TestL10nEsTicketBAIAPI
-from ..lroe.lroe_xml_schema import LROEXMLSchema
-from urllib.request import pathname2url
+from ..lroe.lroe_xml_schema import LROEXMLSchema, LROEXMLSchemaModeNotSupported
 from lxml import etree
 
 TEST_01_XSD_SCHEMA =\
@@ -30,8 +30,8 @@ TEST_06_RESPONSE_GZ_FILENAME = os.path.join(
     TEST_RESPONSE_DIR,
     'Ejemplo_1_LROE_PF_140_IngresosConFacturaConSG_79732487C_Correcta_Resp.gz')
 TEST_07_RESPONSE_GZ_FILENAME = os.path.join(
-        TEST_RESPONSE_DIR,
-        'Ejemplo_1_LROE_PJ_240_FacturasEmitidasConSG_B00000034_Parc_Correcta_Resp.gz')
+    TEST_RESPONSE_DIR,
+    'Ejemplo_1_LROE_PJ_240_FacturasEmitidasConSG_B00000034_Parc_Correcta_Resp.gz')
 TEST_08_RESPONSE_GZ_FILENAME = os.path.join(
     TEST_RESPONSE_DIR,
     'Ejemplo_1_LROE_PF_140_IngresosConFacturaConSG_79732487C_Parc_Correcta_Resp.gz')
@@ -46,10 +46,11 @@ TEST_10_RESPONSE_GZ_FILENAME = os.path.join(
 
 # include lroe catalog in the list of loaded catalogs
 TestL10nEsTicketBAIAPI.catalogs.append(
-    'file:%s'%os.path.join(
-            os.path.abspath(
-                os.path.dirname(__file__)), 'schemas/catalog.xml')
+    'file:' + (os.path.join(
+        os.path.abspath(
+            os.path.dirname(__file__)), 'schemas/catalog.xml'))
 )
+
 
 @common.at_install(False)
 @common.post_install(True)
@@ -82,7 +83,6 @@ class TestL10nEsTicketBAIAPIBatuz(TestL10nEsTicketBAIAPI):
         schemas_version_dirname = LROEXMLSchema.schemas_version_dirname
         script_dirpath = os.path.abspath(os.path.dirname(__file__))
         schemas_dirpath = os.path.join(script_dirpath, 'schemas')
-        url = pathname2url(os.path.join(schemas_dirpath, 'catalog.xml'))
         # Load XSD file with XADES imports
         test_01_xsd_filepath = os.path.abspath(
             os.path.join(schemas_dirpath,
@@ -109,6 +109,10 @@ class TestL10nEsTicketBAIAPIBatuz(TestL10nEsTicketBAIAPI):
             test_04_xsd_filepath,
             parser=etree.ETCompatXMLParser())
 
+    def test_lroe_xml_schema_unknown_raises(self):
+        with self.assertRaises(LROEXMLSchemaModeNotSupported):
+            LROEXMLSchema("unsupporte")
+
     def test_01_xml_alta_model_pj_240(self):
         tbai_invoice1_ids = self.create_tbai_invoice('00001')
         tbai_invoice2_ids = self.create_tbai_invoice('00002')
@@ -123,6 +127,22 @@ class TestL10nEsTicketBAIAPIBatuz(TestL10nEsTicketBAIAPI):
         lroe_xml_root = lroe_op_alta_model_pj_240.get_lroe_operations_xml()
         res = LROEXMLSchema.xml_is_valid(self.test_01_schema_doc, lroe_xml_root)
         self.assertTrue(res)
+        # check gzip compression
+        lroe_op_alta_model_pj_240.xml_datas = base64.encodebytes(b'<e>RAWTEXT</e>')
+        lroe_op_alta_model_pj_240.xml_datas_fname = 'rawtext.xml'
+        data_len, data = lroe_op_alta_model_pj_240.set_trx_gzip_file()
+        self.assertTrue(int(data_len) > 0)
+        self.assertEqual(b'<e>RAWTEXT</e>', gzip.decompress(data))
+        self.assertEqual(
+            b'<e>RAWTEXT</e>',
+            gzip.decompress(
+                base64.decodebytes(lroe_op_alta_model_pj_240.trx_gzip_file)))
+        values = self.env['lroe.operation.response'].prepare_lroe_error_values(
+            lroe_op_alta_model_pj_240,
+            'MSG_CONTENT'
+        )
+        self.assertTrue(values['description'].endswith('MSG_CONTENT'))
+        self.assertTrue(values)
 
     def test_02_xml_alta_model_pf_140(self):
         tbai_invoice1_ids = self.create_tbai_invoice('00001')
@@ -138,6 +158,8 @@ class TestL10nEsTicketBAIAPIBatuz(TestL10nEsTicketBAIAPI):
         lroe_xml_root = lroe_op_alta_model_pf_140.get_lroe_operations_xml()
         res = LROEXMLSchema.xml_is_valid(self.test_02_schema_doc, lroe_xml_root)
         self.assertTrue(res)
+        res = LROEXMLSchema.xml_is_valid(self.test_01_schema_doc, lroe_xml_root)
+        self.assertFalse(res)
 
     def test_03_xml_cancel_model_pj_240(self):
         tbai_invoice1_cancel_ids = self.create_tbai_cancel_invoice('00001')
@@ -191,7 +213,7 @@ class TestL10nEsTicketBAIAPIBatuz(TestL10nEsTicketBAIAPI):
             'eus-bizkaia-n3-numero-registro': '1001'}
         with open(TEST_05_RESPONSE_GZ_FILENAME, 'rb') as response_data_file:
             lroe_srv_response = lroe_api.LROEOperationResponse(
-                data=response_data_file.read(),
+                data=gzip.decompress(response_data_file.read()),
                 headers=response_headers)
             lroe_response_values = \
                 self.env['lroe.operation.response'].prepare_lroe_response_values(
@@ -226,7 +248,7 @@ class TestL10nEsTicketBAIAPIBatuz(TestL10nEsTicketBAIAPI):
             'eus-bizkaia-n3-numero-registro': '1001'}
         with open(TEST_06_RESPONSE_GZ_FILENAME, 'rb') as response_data_file:
             lroe_srv_response = lroe_api.LROEOperationResponse(
-                data=response_data_file.read(),
+                data=gzip.decompress(response_data_file.read()),
                 headers=response_headers)
             lroe_response_values = self.env['lroe.operation.response']\
                 .prepare_lroe_response_values(
@@ -261,7 +283,7 @@ class TestL10nEsTicketBAIAPIBatuz(TestL10nEsTicketBAIAPI):
             'eus-bizkaia-n3-numero-registro': '1001'}
         with open(TEST_07_RESPONSE_GZ_FILENAME, 'rb') as response_data_file:
             lroe_srv_response = lroe_api.LROEOperationResponse(
-                data=response_data_file.read(),
+                data=gzip.decompress(response_data_file.read()),
                 headers=response_headers)
             lroe_response_values = \
                 self.env['lroe.operation.response'].prepare_lroe_response_values(
@@ -306,7 +328,7 @@ class TestL10nEsTicketBAIAPIBatuz(TestL10nEsTicketBAIAPI):
             'eus-bizkaia-n3-numero-registro': '1001'}
         with open(TEST_08_RESPONSE_GZ_FILENAME, 'rb') as response_data_file:
             lroe_srv_response = lroe_api.LROEOperationResponse(
-                data=response_data_file.read(),
+                data=gzip.decompress(response_data_file.read()),
                 headers=response_headers)
             lroe_response_values = self.env['lroe.operation.response']\
                 .prepare_lroe_response_values(
@@ -350,7 +372,7 @@ class TestL10nEsTicketBAIAPIBatuz(TestL10nEsTicketBAIAPI):
         }
         with open(TEST_09_RESPONSE_GZ_FILENAME, 'rb') as response_data_file:
             lroe_srv_response = lroe_api.LROEOperationResponse(
-                data=response_data_file.read(),
+                data=gzip.decompress(response_data_file.read()),
                 headers=response_headers)
             lroe_response_values = \
                 self.env['lroe.operation.response'].prepare_lroe_response_values(
@@ -387,7 +409,7 @@ class TestL10nEsTicketBAIAPIBatuz(TestL10nEsTicketBAIAPI):
         }
         with open(TEST_10_RESPONSE_GZ_FILENAME, 'rb') as response_data_file:
             lroe_srv_response = lroe_api.LROEOperationResponse(
-                data=response_data_file.read(),
+                data=gzip.decompress(response_data_file.read()),
                 headers=response_headers)
             lroe_response_values = \
                 self.env['lroe.operation.response'].prepare_lroe_response_values(
@@ -405,3 +427,36 @@ class TestL10nEsTicketBAIAPIBatuz(TestL10nEsTicketBAIAPI):
             self.assertTrue(
                 response_line_id[2].get('state'),
                 LROEOperationResponseLineState.CORRECT.value)
+
+    def test_get_tbai_state(self):
+        LroeOperationResponse = self.env['lroe.operation.response']
+        states = [
+            (
+                LROEOperationResponseState.BUILD_ERROR.value,
+                LROEOperationResponseState.BUILD_ERROR.value
+            ),
+            (
+                LROEOperationResponseState.REQUEST_ERROR.value,
+                LROEOperationResponseState.REQUEST_ERROR.value
+            ),
+            (
+                LROEOperationResponseState.CORRECT.value,
+                '00'
+            ),
+            (
+                LROEOperationResponseState.INCORRECT.value,
+                '01'
+            ),
+            (
+                LROEOperationResponseState.PARTIALLY_CORRECT.value,
+                '00'),
+            (
+                LROEOperationResponseLineState.CORRECT_WITH_ERRORS.value,
+                '00'
+            ),
+        ]
+        for in_state, out_state in states:
+            s = LroeOperationResponse.get_tbai_state(
+                in_state
+            )
+            self.assertEqual(s, out_state)

@@ -5,7 +5,6 @@ import json
 import base64
 from random import randrange
 from lxml import etree
-from urllib.request import pathname2url
 from ..models.ticketbai_invoice import RefundCode, RefundType
 from ..models.ticketbai_invoice_tax import ExemptedCause, NotExemptedType, \
     NotSubjectToCause, VATRegimeKey, SurchargeOrSimplifiedRegimeType
@@ -19,9 +18,9 @@ from odoo.tests import common
 class TestL10nEsTicketBAIAPI(common.TransactionCase):
 
     catalogs = [
-        'file:%s'%os.path.join(
+        'file:' + (os.path.join(
             os.path.abspath(
-                os.path.dirname(__file__)), 'schemas/catalog.xml')
+                os.path.dirname(__file__)), 'schemas/catalog.xml'))
     ]
 
     def _send_to_tax_agency(self, invoice):
