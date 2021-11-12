@@ -35,6 +35,13 @@ TEST_10_RESPONSE_GZ_FILENAME = \
                  'Ejemplo_Anulacion_1_LROE_PF_140_IngresosConFacturaConSG_79732487C_Correcta_Resp.gz')
 
 
+# include lroe catalog in the list of loaded catalogs
+TestL10nEsTicketBAIAPI.catalogs.append(
+    'file:%s'%os.path.join(
+            os.path.abspath(
+                os.path.dirname(__file__)), '../lroe/schemas/catalog.xml')
+)
+
 @common.at_install(False)
 @common.post_install(True)
 class TestL10nEsTicketBAIAPIBatuz(TestL10nEsTicketBAIAPI):
@@ -65,8 +72,6 @@ class TestL10nEsTicketBAIAPIBatuz(TestL10nEsTicketBAIAPI):
         script_dirpath = os.path.abspath(os.path.dirname(__file__))
         schemas_dirpath = os.path.join(script_dirpath, '../lroe/schemas')
         url = pathname2url(os.path.join(schemas_dirpath, 'catalog.xml'))
-        catalog_path = "file:%s" % url
-        os.environ['XML_CATALOG_FILES'] = catalog_path
         # Load XSD file with XADES imports
         test_01_xsd_filepath = os.path.abspath(
             os.path.join(schemas_dirpath,
