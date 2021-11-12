@@ -104,8 +104,8 @@ class LROETicketBaiApi(TicketBaiApi):
                 self.url, data=data, headers=request_headers, cert=(self.cert, self.key))
         else:
             raise exceptions.RequestException(
-                errno='1',
-                strerror='Please provide cert and key, or p12 buffer and its password.')
+                1,
+                'Please provide cert and key, or p12 buffer and its password.')
         return response
 
     def requests_post(self, request_headers, data):
