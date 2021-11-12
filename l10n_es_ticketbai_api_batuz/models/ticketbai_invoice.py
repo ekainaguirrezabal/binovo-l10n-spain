@@ -16,14 +16,20 @@ _logger = logging.getLogger(__name__)
 class TicketBAIInvoice(models.Model):
     _inherit = 'tbai.invoice'
 
-    lroe_operation_id = fields.Many2one(comodel_name='lroe.operation', string='TicketBAI-Batuz LROE Operation')
+    lroe_operation_id = fields.Many2one(
+        comodel_name='lroe.operation',
+        string='TicketBAI-Batuz LROE Operation')
 
     @api.multi
     def get_lroe_ticketbai_api(self, **kwargs):
         self.ensure_one()
         p12_buffer = self.company_id.tbai_certificate_get_p12_buffer()
         password = self.company_id.tbai_certificate_get_p12_password()
-        return LROETicketBaiApi(self.api_url, p12_buffer=p12_buffer, password=password, **kwargs)
+        return LROETicketBaiApi(
+            self.api_url,
+            p12_buffer=p12_buffer,
+            password=password,
+            **kwargs)
 
     @api.multi
     def create_tbai_lroe_operation(self):
@@ -54,8 +60,8 @@ class TicketBAIInvoice(models.Model):
     @api.multi
     def send(self, **kwargs):
         tbai_tax_agency_id = self.company_id.tbai_tax_agency_id
-        if tbai_tax_agency_id and \
-                tbai_tax_agency_id.id == self.env.ref('l10n_es_ticketbai_api_batuz.tbai_tax_agency_bizkaia').id:
+        if tbai_tax_agency_id and tbai_tax_agency_id.id\
+           == self.env.ref('l10n_es_ticketbai_api_batuz.tbai_tax_agency_bizkaia').id:
             return self.send_lroe_ticketbai(**kwargs)
         else:
             return super().send(**kwargs)
@@ -86,13 +92,17 @@ class TicketBAIInvoice(models.Model):
             lroe_response_obj = self.env['lroe.operation.response'].create(values)
             if lroe_response_obj:
                 operation_state = None
-                if lroe_response_obj.state == LROEOperationResponseState.BUILD_ERROR.value or \
-                        lroe_response_obj.state == LROEOperationResponseState.REQUEST_ERROR.value or \
-                        lroe_response_obj.state == LROEOperationResponseState.INCORRECT.value:
+                if lroe_response_obj.state\
+                   == LROEOperationResponseState.BUILD_ERROR.value\
+                   or lroe_response_obj.state\
+                   == LROEOperationResponseState.REQUEST_ERROR.value\
+                   or lroe_response_obj.state\
+                   == LROEOperationResponseState.INCORRECT.value:
                     operation_state = LROEOperationStateEnum.ERROR.value
                 if lroe_response_obj.state == LROEOperationResponseState.CORRECT.value:
                     operation_state = LROEOperationStateEnum.RECORDED.value
-                if lroe_response_obj.state == LROEOperationResponseState.PARTIALLY_CORRECT.value:
+                if lroe_response_obj.state ==\
+                   LROEOperationResponseState.PARTIALLY_CORRECT.value:
                     operation_state = LROEOperationStateEnum.RECORDED_WARNING.value
                 if lroe_operation and operation_state:
                     lroe_operation.state = operation_state

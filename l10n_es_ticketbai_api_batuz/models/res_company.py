@@ -8,6 +8,9 @@ from .lroe_operation import LROEModelEnum
 class ResCompany(models.Model):
     _inherit = 'res.company'
 
-    lroe_model = fields.Selection([(LROEModelEnum.model_pj_240.value, 'LROE PJ 240'),
-                                   (LROEModelEnum.model_pf_140.value, 'LROE PF 140')],
-                                  string="LROE Model", required=True, default=LROEModelEnum.model_pj_240.value)
+    lroe_model = fields.Selection([
+        (LROEModelEnum.model_pj_240.value, 'LROE PJ 240'),
+        (LROEModelEnum.model_pf_140.value, 'LROE PF 140')],
+        string="LROE Model",
+        required=True,
+        default=LROEModelEnum.model_pj_240.value)

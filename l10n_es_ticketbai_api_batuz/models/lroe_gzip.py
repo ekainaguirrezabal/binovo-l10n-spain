@@ -43,6 +43,7 @@ class LROEGzip:
             with gzip.open(xml_file_name_in, 'rb') as f_in:
                 xml_file_out = xml_file_name_out
                 if not xml_file_name_out:
-                    xml_file_out = os.path.splitext(os.path.basename(xml_file_name_in))[0] + '.xml'
+                    xml_file_out = os.path.splitext(
+                        os.path.basename(xml_file_name_in))[0] + '.xml'
                 with open(xml_file_out, 'wb') as f_out:
                     shutil.copyfileobj(f_in, f_out)

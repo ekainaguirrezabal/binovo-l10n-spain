@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # © 2021 Binovo IT Human Project SL
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
@@ -12,4 +11,3 @@ def migrate(cr, version):
         env = odoo.api.Environment(cr, odoo.SUPERUSER_ID, {})
         for company in env['res.company'].search([]):
             company.onchange_tbai_tax_agency()
-

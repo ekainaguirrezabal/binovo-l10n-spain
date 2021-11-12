@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright (2021) Binovo IT Human Project SL
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import logging
@@ -24,12 +23,17 @@ class TicketBAIInvoice(models.Model):
         self.ensure_one()
         tbai_tax_agency_id = self.company_id.tbai_tax_agency_id
         if tbai_tax_agency_id and \
-                tbai_tax_agency_id.id == self.env.ref('l10n_es_ticketbai_api_batuz.tbai_tax_agency_bizkaia').id:
+                tbai_tax_agency_id.id ==\
+                self.env.ref('l10n_es_ticketbai_api_batuz.tbai_tax_agency_bizkaia').id:
             if TicketBaiSchema.TicketBai.value == self.schema and self.invoice_id:
-                return self.send_lroe_ticketbai(invoice_id=self.invoice_id.id, **kwargs)
+                return self.send_lroe_ticketbai(
+                    invoice_id=self.invoice_id.id,
+                    **kwargs)
             elif TicketBaiSchema.AnulaTicketBai.value == self.schema and \
                     self.cancelled_invoice_id:
-                return self.send_lroe_ticketbai(invoice_id=self.cancelled_invoice_id.id, **kwargs)
+                return self.send_lroe_ticketbai(
+                    invoice_id=self.cancelled_invoice_id.id,
+                    **kwargs)
             else:
                 return self.send_lroe_ticketbai(**kwargs)
         else:

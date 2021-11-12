@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright (2021) Binovo IT Human Project SL
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 from odoo import models, fields, _, exceptions, api
@@ -6,7 +5,9 @@ from collections import OrderedDict
 import base64
 from datetime import datetime
 from lxml import etree
-from ..lroe.lroe_xml_schema import LROEXMLSchema, LROEXMLSchemaModeNotSupported, LROEOperationTypeEnum
+from ..lroe.lroe_xml_schema import LROEXMLSchema,\
+    LROEXMLSchemaModeNotSupported,\
+    LROEOperationTypeEnum
 from .lroe_gzip import LROEGzip
 from enum import Enum
 
@@ -53,18 +54,31 @@ class LROEOperation(models.Model):
 
     name = fields.Char(compute='compute_lroe_operation_name', store=True)
     company_id = fields.Many2one('res.company', required=True)
-    type = fields.Selection([(LROEOperationEnum.create.value, 'Create'), (LROEOperationEnum.cancel.value, 'Cancel'),
-                             (LROEOperationEnum.update.value, 'Update'), (LROEOperationEnum.query.value, 'Query')
-                             ], string="Type", required=True, default=LROEOperationEnum.create.value)
-    model = fields.Selection("Model", related='company_id.lroe_model', readonly=True, required=True)
-    state = fields.Selection(selection=[(LROEOperationStateEnum.DRAFT.value, 'Draft'),
-                                        (LROEOperationStateEnum.ERROR.value, 'Error'),
-                                        (LROEOperationStateEnum.CANCEL.value, 'Cancel'),
-                                        (LROEOperationStateEnum.RECORDED_WARNING.value, 'Recorded Warning'),
-                                        (LROEOperationStateEnum.RECORDED.value, 'Recorded')],
-                             string="State", default=LROEOperationStateEnum.DRAFT.value)
-    tbai_invoice_ids = fields.One2many(comodel_name='tbai.invoice', inverse_name='lroe_operation_id',
-                                       string="TBai Customer Invoices")
+    type = fields.Selection([
+        (LROEOperationEnum.create.value, 'Create'),
+        (LROEOperationEnum.cancel.value, 'Cancel'),
+        (LROEOperationEnum.update.value, 'Update'),
+        (LROEOperationEnum.query.value, 'Query')],
+        string="Type",
+        required=True,
+        default=LROEOperationEnum.create.value)
+    model = fields.Selection(
+        "Model",
+        related='company_id.lroe_model',
+        readonly=True,
+        required=True)
+    state = fields.Selection(
+        selection=[(LROEOperationStateEnum.DRAFT.value, 'Draft'),
+                   (LROEOperationStateEnum.ERROR.value, 'Error'),
+                   (LROEOperationStateEnum.CANCEL.value, 'Cancel'),
+                   (LROEOperationStateEnum.RECORDED_WARNING.value, 'Recorded Warning'),
+                   (LROEOperationStateEnum.RECORDED.value, 'Recorded')],
+        string="State",
+        default=LROEOperationStateEnum.DRAFT.value)
+    tbai_invoice_ids = fields.One2many(
+        comodel_name='tbai.invoice',
+        inverse_name='lroe_operation_id',
+        string="TBai Customer Invoices")
     xml_datas = fields.Binary()
     xml_datas_fname = fields.Char('XML File Name')
     xml_file_size = fields.Integer('File Size')
@@ -108,11 +122,13 @@ class LROEOperation(models.Model):
 
         def build_renta():
             # TODO LROE
-            res_dict = {"DetalleRenta": OrderedDict([("Epigrafe", "197330"),
-                                                     # ("IngresoAComputarIRPFDiferenteBaseImpoIVA", ""),
-                                                     # ("ImporteIngresoIRPF", ""),
-                                                     # ("CriterioCobros", "")
-                                                     ])}
+            res_dict = {
+                "DetalleRenta": OrderedDict([
+                    ("Epigrafe", "197330"),
+                    # ("IngresoAComputarIRPFDiferenteBaseImpoIVA", ""),
+                    # ("ImporteIngresoIRPF", ""),
+                    # ("CriterioCobros", "")
+                ])}
             return res_dict
 
         self.ensure_one()
@@ -120,12 +136,15 @@ class LROEOperation(models.Model):
         if self.tbai_invoice_ids:
             if lroe_op_enum == LROEOperationEnum.create.value:
                 for tbai_customer_invoice_id in self.tbai_invoice_ids:
-                    ingresos.append(OrderedDict([("TicketBai", tbai_customer_invoice_id.datas),
-                                                 ("Renta", build_renta()),
-                                                 ]))
+                    ingresos.append(OrderedDict([
+                        ("TicketBai", tbai_customer_invoice_id.datas),
+                        ("Renta", build_renta()),
+                    ]))
             elif lroe_op_enum == LROEOperationEnum.cancel.value:
                 for tbai_customer_cancel_id in self.tbai_invoice_ids:
-                    ingresos.append(OrderedDict([("AnulacionTicketBai", tbai_customer_cancel_id.datas)]))
+                    ingresos.append(OrderedDict([
+                        ("AnulacionTicketBai",
+                         tbai_customer_cancel_id.datas)]))
         return {'Ingreso': ingresos}
 
     def build_facturas_emitidas(self, lroe_op_enum):
@@ -134,19 +153,27 @@ class LROEOperation(models.Model):
         if self.tbai_invoice_ids:
             if lroe_op_enum == LROEOperationEnum.create.value:
                 for tbai_customer_invoice_id in self.tbai_invoice_ids:
-                    facturas_emitidas.append(OrderedDict([("TicketBai", tbai_customer_invoice_id.datas)]))
+                    facturas_emitidas.append(OrderedDict([
+                        ("TicketBai",
+                         tbai_customer_invoice_id.datas)]))
             elif lroe_op_enum == LROEOperationEnum.cancel.value:
                 for tbai_customer_cancel_id in self.tbai_invoice_ids:
-                    facturas_emitidas.append(OrderedDict([("AnulacionTicketBai", tbai_customer_cancel_id.datas)]))
+                    facturas_emitidas.append(OrderedDict([
+                        ("AnulacionTicketBai",
+                         tbai_customer_cancel_id.datas)]))
         return {'FacturaEmitida': facturas_emitidas}
 
     def build_cabecera_ejercicio(self, lroe_op_enum):
         self.ensure_one()
         if self.tbai_invoice_ids:
             if lroe_op_enum == LROEOperationEnum.create.value:
-                return str(datetime.strptime(self.tbai_invoice_ids[0].expedition_date, '%d-%m-%Y').date().year)
+                return str(datetime.strptime(
+                    self.tbai_invoice_ids[0].expedition_date,
+                    '%d-%m-%Y').date().year)
             elif lroe_op_enum == LROEOperationEnum.cancel.value:
-                return str(datetime.strptime(self.tbai_invoice_ids[0].expedition_date, '%d-%m-%Y').date().year)
+                return str(datetime.strptime(
+                    self.tbai_invoice_ids[0].expedition_date,
+                    '%d-%m-%Y').date().year)
         return str(datetime.now().year)
 
     def build_obligado_tributario(self):
@@ -239,7 +266,8 @@ class LROEOperation(models.Model):
             lroe_xml_schema = LROEXMLSchema(operation_type)
             my_ordered_dict = self.build_xml_pf_140(operation_type)
         else:
-            raise LROEXMLSchemaModeNotSupported("TicketBAI - Batuz LROE XML model not supported!")
+            raise LROEXMLSchemaModeNotSupported(
+                "TicketBAI - Batuz LROE XML model not supported!")
         if lroe_xml_schema and my_ordered_dict:
             return lroe_xml_schema.dict2xml(my_ordered_dict)
 
