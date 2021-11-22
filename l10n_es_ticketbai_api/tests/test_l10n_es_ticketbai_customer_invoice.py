@@ -27,6 +27,48 @@ class TestL10nEsTicketBAIInvoice(TestL10nEsTicketBAIAPI):
         res = XMLSchema.xml_is_valid(self.test_xml_invoice_schema_doc, root)
         self.assertTrue(res)
 
+    def test_missing_customer_address(self):
+        uid = self.tech_user.id
+        invoice = self.create_tbai_national_invoice(
+            name='TBAITEST/00001', company_id=self.main_company.id,
+            number='00001',
+            number_prefix='TBAITEST/', uid=uid)
+        self.assertEqual(invoice.state, 'draft')
+        self.env['tbai.invoice.customer'].create({
+            'tbai_invoice_id': invoice.id,
+            'name': self.partner.tbai_get_value_apellidos_nombre_razon_social(),
+            'country_code': self.partner.country_id.code.upper(),
+            'nif': self.partner.tbai_get_value_nif(),
+            'identification_number':
+                self.partner.tbai_partner_identification_number or self.partner.vat,
+            'idtype': self.partner.tbai_partner_idtype,
+            'zip': self.partner.zip
+        })
+        self.assertEqual(1, len(invoice.tbai_customer_ids))
+        with self.assertRaises(exceptions.ValidationError):
+            invoice.get_tbai_xml_signed_and_signature_value()
+
+    def test_missing_customer_zip(self):
+        uid = self.tech_user.id
+        invoice = self.create_tbai_national_invoice(
+            name='TBAITEST/00001', company_id=self.main_company.id,
+            number='00001',
+            number_prefix='TBAITEST/', uid=uid)
+        self.assertEqual(invoice.state, 'draft')
+        self.env['tbai.invoice.customer'].create({
+            'tbai_invoice_id': invoice.id,
+            'name': self.partner.tbai_get_value_apellidos_nombre_razon_social(),
+            'country_code': self.partner.country_id.code.upper(),
+            'nif': self.partner.tbai_get_value_nif(),
+            'identification_number':
+                self.partner.tbai_partner_identification_number or self.partner.vat,
+            'idtype': self.partner.tbai_partner_idtype,
+            'address': self.partner.tbai_get_value_direccion(),
+        })
+        self.assertEqual(1, len(invoice.tbai_customer_ids))
+        with self.assertRaises(exceptions.ValidationError):
+            invoice.get_tbai_xml_signed_and_signature_value()
+
     def test_partner_missing_country_code(self):
         self.partner.country_id = False
         self.partner.vat = 'B00000000'
@@ -78,7 +120,6 @@ class TestL10nEsTicketBAIInvoice(TestL10nEsTicketBAIAPI):
             self._prepare_invoice_send_to_tax_agency()
             self._prepare_araba_company(self.main_company)
             self._prepare_invoice_send_to_tax_agency()
-
 
     def test_chaining_and_rejected_by_the_tax_agency(self):
         uid = self.tech_user.id
