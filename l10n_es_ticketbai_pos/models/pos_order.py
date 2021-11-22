@@ -91,8 +91,11 @@ class PosOrder(models.Model):
             })
         gipuzkoa_tax_agency = self.env.ref(
             "l10n_es_ticketbai_api.tbai_tax_agency_gipuzkoa")
+        araba_tax_agency = self.env.ref(
+            "l10n_es_ticketbai_api.tbai_tax_agency_araba")
         tax_agency = self.company_id.tbai_tax_agency_id
         is_gipuzkoa_tax_agency = tax_agency == gipuzkoa_tax_agency
+        is_araba_tax_agency = tax_agency == araba_tax_agency
         taxes = {}
         lines = []
         for line in self.lines:
@@ -110,7 +113,7 @@ class PosOrder(models.Model):
                     computed_tax['total_included'] - computed_tax['total_excluded']
                 taxes[tax.id]['base'] += computed_tax['total_excluded']
                 taxes[tax.id]['amount_total'] += amount_total
-            if is_gipuzkoa_tax_agency:
+            if is_gipuzkoa_tax_agency or is_araba_tax_agency:
                 lines.append((0, 0, {
                     'description': line.name,
                     'quantity': "%.2f" % line.qty,
@@ -125,7 +128,7 @@ class PosOrder(models.Model):
             tax_values['amount'] = "%.2f" % tax_values['amount']
             tax_values['amount_total'] = "%.2f" % tax_values['amount_total']
             vals['tbai_tax_ids'].append((0, 0, tax_values))
-        if is_gipuzkoa_tax_agency:
+        if is_gipuzkoa_tax_agency or is_araba_tax_agency:
             vals['tbai_invoice_line_ids'] = lines
         return vals
 
