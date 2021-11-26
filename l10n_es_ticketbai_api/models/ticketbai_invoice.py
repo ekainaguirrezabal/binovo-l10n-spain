@@ -784,14 +784,14 @@ class TicketBAIInvoice(models.Model):
             customer_res["ApellidosNombreRazonSocial"] = customer.name
             if customer.zip:
                 customer_res["CodigoPostal"] = customer.zip
-            elif tax_agency == gipuzkoa_tax_agency or tax_agency == araba_tax_agency:
+            elif tax_agency in (gipuzkoa_tax_agency, araba_tax_agency):
                 raise exceptions.ValidationError(_(
                     "TicketBAI Invoice %s:\n"
                     "ZIP code for %s is required for the Tax Agency %s!"
                 ) % (self.name, customer.name, tax_agency.name))
             if customer.address:
                 customer_res["Direccion"] = customer.address
-            elif tax_agency == gipuzkoa_tax_agency or tax_agency == araba_tax_agency:
+            elif tax_agency in (gipuzkoa_tax_agency, araba_tax_agency):
                 raise exceptions.ValidationError(_(
                     "TicketBAI Invoice %s:\n"
                     "Address for %s is required for the Tax Agency %s!"
@@ -919,7 +919,7 @@ class TicketBAIInvoice(models.Model):
         araba_tax_agency = self.env.ref(
             "l10n_es_ticketbai_api.tbai_tax_agency_araba")
         tax_agency = self.company_id.tbai_tax_agency_id
-        if tax_agency == gipuzkoa_tax_agency or tax_agency == araba_tax_agency:
+        if tax_agency in (gipuzkoa_tax_agency, araba_tax_agency):
             id_detalle_factura = self.build_id_detalle_factura()
             if id_detalle_factura:
                 res = {"IDDetalleFactura": id_detalle_factura}
