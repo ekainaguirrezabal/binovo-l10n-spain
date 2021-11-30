@@ -168,7 +168,7 @@ class TestL10nEsTicketBAIAPI(common.TransactionCase):
         amount_total_untaxed = l1_amount_total_untaxed + l2_amount_total_untaxed
         amount_total = l1_amount_total + l2_amount_total
         tax_vals = self._get_invoice_tax_values(
-            base=amount_total, is_subject_to=True, is_exempted=False,
+            base=amount_total_untaxed, is_subject_to=True, is_exempted=False,
             not_exempted_type=NotExemptedType.S1.value, amount=21.0,
             amount_total=amount_total - amount_total_untaxed)
         vals.update({
