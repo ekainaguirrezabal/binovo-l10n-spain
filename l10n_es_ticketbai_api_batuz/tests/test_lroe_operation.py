@@ -122,18 +122,6 @@ class TestL10nEsTicketBAIAPIBatuz(TestL10nEsTicketBAIAPI):
         company_vals.update({'tbai_installation_id': tbai_installation.id})
         company.write(company_vals)
 
-    # def _send_to_tax_agency(self, invoice):
-    #     pending_invoices = self.env['tbai.invoice'].get_next_pending_invoice(
-    #         company_id=self.main_company.id, limit=0)
-    #     self.assertEqual(1, len(pending_invoices))
-    #     self.env['tbai.invoice'].send_pending_invoices()
-    #     response_ok = invoice.state == 'sent' or invoice.state == 'error' and
-    #     self.assertEqual('sent', invoice.state)
-    #     pending_invoices = self.env['tbai.invoice'].get_next_pending_invoice(
-    #         company_id=self.main_company.id, limit=0)
-    #     self.assertEqual(0, len(pending_invoices))
-    #     invoice.sudo().unlink()
-
     def setUp(self):
         super().setUp()
         self.lroe_op_model = self.env['lroe.operation']
