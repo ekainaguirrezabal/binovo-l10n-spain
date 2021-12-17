@@ -25,8 +25,8 @@ def migrate(cr, version):
                         env['l10n.es.aeat.report']._get_tax_id_from_tax_template(
                             fp_tmpl_exemption.tax_id, fp_nacional.company_id.id)
                     fp_tmpl_tax = \
-                        env['account.tax'].\
-                            browse(fp_tmpl_tax_id) if fp_tmpl_tax_id else False
+                        env['account.tax'].browse(fp_tmpl_tax_id) \
+                        if fp_tmpl_tax_id else False
                 else:
                     fp_tmpl_tax =\
                         env['l10n.es.aeat.report']\
