@@ -167,9 +167,11 @@ odoo.define('l10n_es_ticketbai_pos.tbai_models', function (require) {
                     },
                     lines: this.get_tbai_lines_from_json(order_json.lines),
                     total: field_utils.parse.float(self.pos.chrome.format_currency_no_symbol(order_json.amount_total)),
-                    vatLines: this.get_tbai_vat_lines_from_json(order_json.taxLines),
                     vatKeys: vat_keys,
                 };
+                if (order_json.taxLines && order_json.taxLines.length>0) {
+                    tbai.Invoice.vatLines = this.get_tbai_vat_lines_from_json(order_json.taxLines);
+                }
                 if (order_json.partner_id) {
                     var partner = this.pos.db.get_partner_by_id(order_json.partner_id);
                     var country_code = this.pos.get_country_code_by_id(partner.country_id[0]);
@@ -217,7 +219,7 @@ odoo.define('l10n_es_ticketbai_pos.tbai_models', function (require) {
                 }
                 lines.push({
                     description: description_line,
-                    quantity: field_utils.parse.float(self.pos.chrome.format_currency_no_symbol(line.qty)),
+                    quantity: line.qty,
                     price: field_utils.parse.float(self.pos.chrome.format_currency_no_symbol(line.tbai_price_unit)),
                     discount: field_utils.parse.float(self.pos.chrome.format_currency_no_symbol(line.discount)),
                     discountAmount:
