@@ -11,6 +11,7 @@
                 <script type="text/javascript" src="/l10n_es_ticketbai_pos/static/src/js/tbai_models.js"></script>
                 <script type="text/javascript" src="/l10n_es_ticketbai_pos/static/src/js/screens.js"></script>
                 <script type="text/javascript" src="/l10n_es_ticketbai_pos/static/src/js/widgets.js"></script>
+                <script type="text/javascript" src="/l10n_es_ticketbai_pos/static/src/js/db.js"/>
             </xpath>
         </template>
     </data>
