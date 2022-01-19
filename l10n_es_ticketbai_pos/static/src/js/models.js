@@ -130,16 +130,6 @@ odoo.define('l10n_es_ticketbai_pos.models', function (require) {
             this.tbai_vat_regime_keys = null;
             pos_super.initialize.apply(this, arguments);
         },
-        load_orders: function () {
-            pos_super.load_orders.apply(this, arguments);
-            if (this.company.tbai_enabled) {
-                this.get('orders').forEach(function (order) {
-                    if (!order.to_invoice) {
-                        order.tbai_build_invoice();
-                    }
-                });
-            }
-        },
         get_country_by_id: function (id) {
             var countries = this.countries;
             var country = null;
@@ -176,7 +166,6 @@ odoo.define('l10n_es_ticketbai_pos.models', function (require) {
             var self = this;
             if (this.company.tbai_enabled && order) {
                 return order.tbai_current_invoice.then(function (tbai_inv) {
-                    order.tbai_simplified_invoice = tbai_inv;
                     self.tbai_last_invoice = tbai_inv;
                     return pos_super.push_order.call(self, order, opts);
                 });
@@ -245,23 +234,7 @@ odoo.define('l10n_es_ticketbai_pos.models', function (require) {
             this.tbai_simplified_invoice = null;
             this.tbai_current_invoice = $.when();
             order_super.initialize.apply(this, arguments);
-            if (this.pos.company.tbai_enabled) {
-                this.on('change', function () {
-                    this.tbai_build_invoice(); }, this);
-                this.orderlines.on('change', function () {
-                    this.tbai_build_invoice(); }, this);
-                this.orderlines.on('add', function () {
-                    this.tbai_build_invoice(); }, this);
-                this.orderlines.on('remove', function () {
-                    this.tbai_build_invoice(); }, this);
-            }
             return this;
-        },
-        set_to_invoice: function (to_invoice) {
-            order_super.set_to_invoice.apply(this, arguments);
-            if (this.pos.company.tbai_enabled && !to_invoice) {
-                this.tbai_build_invoice();
-            }
         },
         check_products_have_taxes: function () {
             var orderLines = this.get_orderlines();
