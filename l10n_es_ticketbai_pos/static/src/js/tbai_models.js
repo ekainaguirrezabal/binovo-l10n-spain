@@ -50,7 +50,7 @@ odoo.define('l10n_es_ticketbai_pos.tbai_models', function (require) {
             var simplified_invoice = null;
             var tbai_json = null;
 
-            this.previous_tbai_invoice = this.pos.tbai_last_invoice || null;
+            this.previous_tbai_invoice = this.pos.get_tbai_last_invoice_data();
             this.expedition_date = new Date();
             simplified_invoice =
                 this.order.simplified_invoice || this.pos.get_simple_inv_next_number();
@@ -192,7 +192,7 @@ odoo.define('l10n_es_ticketbai_pos.tbai_models', function (require) {
                     tbai.PreviousInvoiceId = {
                         number: this.previous_tbai_invoice.number,
                         serie: this.previous_tbai_invoice.number_prefix,
-                        issuedTime: this.previous_tbai_invoice.expedition_date,
+                        issuedTime: new Date(JSON.parse(JSON.stringify(this.previous_tbai_invoice.expedition_date))),
                         hash: this.previous_tbai_invoice.signature_value.substring(0, 100),
                     };
                 }
