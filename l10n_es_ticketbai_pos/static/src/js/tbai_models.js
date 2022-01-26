@@ -169,21 +169,17 @@ odoo.define('l10n_es_ticketbai_pos.tbai_models', function (require) {
                     total: field_utils.parse.float(self.pos.chrome.format_currency_no_symbol(order_json.amount_total)),
                     vatKeys: vat_keys,
                 };
-                if (order_json.taxLines && order_json.taxLines.length>0) {
-                    tbai.Invoice.vatLines = this.get_tbai_vat_lines_from_json(order_json.taxLines);
-                }
+                tbai.Invoice.vatLines = this.get_tbai_vat_lines_from_json(order_json);
                 if (order_json.partner_id) {
                     var partner = this.pos.db.get_partner_by_id(order_json.partner_id);
-                    var country_code = this.pos.get_country_code_by_id(partner.country_id[0]);
                     var zip = partner.zip;
                     var address = (partner.street || '') + ', ' +
-                                      (partner.zip || '') + ' ' +
-                                      (partner.city || '') + ', ' +
-                                      (partner.country_id[1] || '');
+                                  (partner.zip || '') + ' ' +
+                                  (partner.city || '') + ', ' +
+                                  (partner.country_id[1] || '');
                     tbai.Invoice.recipient = {
                         irsId: this.get_tbai_partner_vat(order_json.partner_id),
                         name: partner.name,
-                        country: country_code,
                         postal: zip,
                         address: address,
                     };
@@ -235,17 +231,27 @@ odoo.define('l10n_es_ticketbai_pos.tbai_models', function (require) {
             });
             return lines;
         },
-        get_tbai_vat_lines_from_json: function(vatLinesJson) {
+        get_tbai_vat_lines_from_json: function(order_json) {
             var vatLines = [];
+            var vatLinesJson = order_json.taxLines
             var self = this;
-            vatLinesJson.forEach(function(vatLineJson) {
-                var vatLine = vatLineJson[2];
-                vatLines.push({
-                    base: field_utils.parse.float(self.pos.chrome.format_currency_no_symbol(vatLine.baseAmount)),
-                    rate: vatLine.tax.amount,
-                    amount: field_utils.parse.float(self.pos.chrome.format_currency_no_symbol(vatLine.amount)),
+            if (vatLinesJson && vatLinesJson.length > 0) {
+                vatLinesJson.forEach(function(vatLineJson) {
+                    var vatLine = vatLineJson[2];
+                    vatLines.push({
+                        base: field_utils.parse.float(self.pos.chrome.format_currency_no_symbol(vatLine.baseAmount)),
+                        rate: vatLine.tax.amount,
+                        amount: field_utils.parse.float(self.pos.chrome.format_currency_no_symbol(vatLine.amount)),
+                    });
                 });
-            });
+            } else {
+                var fline = order_json.lines[0][2];
+                vatLines.push({
+                    base: field_utils.parse.float(self.pos.chrome.format_currency_no_symbol(order_json.amount_total)),
+                    rate: fline.tbai_vat_amount,
+                    amount: 0,
+                });
+            }
             return vatLines;
         }
     });

@@ -283,7 +283,7 @@ odoo.define('l10n_es_ticketbai_pos.models', function (require) {
             var country_code;
             var customer = customer || this.get_client();
             var ok = true;
-            if (customer !== null) {
+            if (customer != null) {
                 ok = this.check_customer_country_code(customer);
                 if (ok) {
                     country_code = this.pos.get_country_code_by_id(customer.country_id[0]);
@@ -298,7 +298,7 @@ odoo.define('l10n_es_ticketbai_pos.models', function (require) {
             var country_code;
             var customer = customer || this.get_client();
             var ok = true;
-            if (customer !== null) {
+            if (customer != null) {
                 ok = this.check_customer_country_code(customer);
                 if (ok) {
                     country_code = this.pos.get_country_code_by_id(customer.country_id[0]);
