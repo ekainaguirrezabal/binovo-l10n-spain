@@ -32,21 +32,6 @@ class TicketBAIInvoice(models.Model):
         else:
             return super().send(**kwargs)
 
-    @api.multi
-    def cancel_and_recreate(self):
-        if 0 < len(self.filtered(
-                lambda x: x.state != TicketBaiInvoiceState.error.value)):
-            raise exceptions.ValidationError(_(
-                "TicketBAI: You cannot cancel and recreate an Invoice with a state "
-                "different than 'Error'."))
-        for record in self.sudo():
-            record.cancel()
-            if TicketBaiSchema.TicketBai.value == record.schema and record.invoice_id:
-                record.invoice_id._tbai_build_invoice()
-            elif TicketBaiSchema.AnulaTicketBai.value == record.schema and \
-                    record.cancelled_invoice_id:
-                record.cancelled_invoice_id._tbai_invoice_cancel()
-
 
 class TicketBAIInvoiceRefundOrigin(models.Model):
     _name = 'tbai.invoice.refund.origin'

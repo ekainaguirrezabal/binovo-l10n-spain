@@ -20,13 +20,6 @@ class TicketBAIInvoice(models.Model):
             res = super().send(**kwargs)
         return res
 
-    @api.multi
-    def cancel_and_recreate(self):
-        super().cancel_and_recreate()
-        for record in self.sudo():
-            if TicketBaiSchema.TicketBai.value == record.schema and record.pos_order_id:
-                record.pos_order_id._tbai_build_invoice()
-
     def build_tbai_simplified_invoice(self):
         self.ensure_one()
         if self.schema == TicketBaiSchema.TicketBai.value:
@@ -41,18 +34,3 @@ class TicketBAIInvoice(models.Model):
         self.mark_as_pending()
         if self.schema == TicketBaiSchema.TicketBai.value:
             self.pos_order_id.config_id.tbai_last_invoice_id = self
-
-    @api.model
-    def mark_chain_as_error(self, invoice_to_error):
-        # Restore last invoice successfully sent
-        if invoice_to_error.pos_order_id:
-            if TicketBaiSchema.TicketBai.value == invoice_to_error.schema:
-                invoice_to_error.pos_order_id.config_id.tbai_last_invoice_id = \
-                    invoice_to_error.previous_tbai_invoice_id
-            while invoice_to_error:
-                invoice_to_error.error()
-                invoice_to_error = self.search([
-                    ('previous_tbai_invoice_id', '=', invoice_to_error.id)
-                ])
-        else:
-            super().mark_chain_as_error(invoice_to_error)
