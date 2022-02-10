@@ -20,13 +20,6 @@ class TicketBAIInvoice(models.Model):
             res = super().send(**kwargs)
         return res
 
-    @api.multi
-    def cancel_and_recreate(self):
-        super().cancel_and_recreate()
-        for record in self.sudo():
-            if TicketBaiSchema.TicketBai.value == record.schema and record.pos_order_id:
-                record.pos_order_id._tbai_build_invoice()
-
     def build_tbai_simplified_invoice(self):
         self.ensure_one()
         if self.schema == TicketBaiSchema.TicketBai.value:
