@@ -353,6 +353,8 @@ odoo.define('l10n_es_ticketbai_pos.models', function (require) {
                         json.tbai_signature_value = signature_value;
                         json.tbai_datas = datas;
                         json.tbai_vat_regime_key = tbai_inv.vat_regime_key;
+                        json.tbai_identifier = tbai_inv.tbai_identifier;
+                        json.tbai_qr_src = tbai_inv.tbai_qr_src;
                         if (tbai_inv.previous_tbai_invoice !== null) {
                             json.tbai_previous_order_pos_reference =
                                 tbai_inv.previous_tbai_invoice.order.simplified_invoice;

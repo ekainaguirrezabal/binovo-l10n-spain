@@ -155,6 +155,7 @@ class PosOrder(models.Model):
         if self.tbai_enabled:
             res.update({
                 'tbai_identifier': self.tbai_invoice_id.tbai_identifier,
+                'tbai_qr_src': 'data:image/png;base64,' + str(self.tbai_invoice_id.qr.decode('UTF-8')),
                 'tbai_qr_url': self.tbai_invoice_id.qr_url
             })
         return res
