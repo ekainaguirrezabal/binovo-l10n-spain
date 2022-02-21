@@ -1125,7 +1125,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_es_ticketbai_api.field_res_partner_tbai_partner_idtype
 #: model:ir.model.fields,field_description:l10n_es_ticketbai_api.field_res_users_tbai_partner_idtype
 msgid "TicketBAI Identification Type Code"
-msgstr "TicketBAI Tipo de identificación"
+msgstr "Tipo de identificación"
 
 #. module: l10n_es_ticketbai_api
 #: model:ir.actions.act_window,name:l10n_es_ticketbai_api.action_tbai_installations
@@ -1645,11 +1645,6 @@ msgid "TicketBAI Invoice Details"
 msgstr "TicketBAI Factura líneas/detalles"
 
 #. module: l10n_es_ticketbai_api
-#: model:ir.model.fields,field_description:l10n_es_ticketbai_api.field_tbai_invoice_tbai_customer_ids
-msgid "TicketBAI Invoice Recipients"
-msgstr "TicketBAI Factura destinatarios"
-
-#. module: l10n_es_ticketbai_api
 #: model:ir.model.fields,field_description:l10n_es_ticketbai_api.field_tbai_invoice_tbai_tax_ids
 msgid "TicketBAI Invoice Taxes"
 msgstr "TicketBAI Factura impuestos"
@@ -1663,11 +1658,6 @@ msgstr "TicketBAI Factura líneas/detalles"
 #: model:ir.model.fields,help:l10n_es_ticketbai_api.field_tbai_invoice_is_invoice_refund
 msgid "TicketBAI Invoice is a refund (Substitution or Differences)."
 msgstr "TicketBAI Factura es rectificativa (Sustitución o por diferencias)."
-
-#. module: l10n_es_ticketbai_api
-#: model:ir.model,name:l10n_es_ticketbai_api.model_tbai_invoice_customer
-msgid "TicketBAI Invoice recipients"
-msgstr "TicketBAI Factura destinatarios"
 
 #. module: l10n_es_ticketbai_api
 #: model:ir.model,name:l10n_es_ticketbai_api.model_tbai_invoice_tax
