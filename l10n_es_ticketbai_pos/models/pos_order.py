@@ -61,17 +61,6 @@ class PosOrder(models.Model):
             'vat_regime_key': self.tbai_vat_regime_key.code,
             'state': TicketBaiInvoiceState.pending.value
         }
-        if partner:
-            vals['tbai_customer_ids'] = [(0, 0, {
-                'name': partner.tbai_get_value_apellidos_nombre_razon_social(),
-                'country_code': partner.tbai_get_partner_country_code(),
-                'nif': partner.tbai_get_value_nif(),
-                'identification_number':
-                    partner.tbai_partner_identification_number or partner.vat,
-                'idtype': partner.tbai_partner_idtype,
-                'address': partner.tbai_get_value_direccion(),
-                'zip': partner.zip
-            })]
         if pos_order is None:
             vals['previous_tbai_invoice_id'] = self.config_id.tbai_last_invoice_id.id
         else:

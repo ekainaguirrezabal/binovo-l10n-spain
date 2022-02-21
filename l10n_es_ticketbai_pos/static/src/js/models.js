@@ -21,13 +21,12 @@ odoo.define('l10n_es_ticketbai_pos.models', function (require) {
     ]);
 
     models.load_fields('res.country', ['code']);
-    models.load_fields('res.partner', [
-        'tbai_partner_idtype', 'tbai_partner_identification_number']);
+    models.load_fields('res.partner', ['tbai_partner_idtype']);
 
     models.load_models([
         {
             model:  'res.partner',
-            fields: ['vat', 'country_id', 'tbai_partner_idtype', 'tbai_partner_identification_number'],
+            fields: ['vat', 'country_id', 'tbai_partner_idtype'],
             condition: function (self, tmp) {
                 return self.company.tbai_enabled;
             },
@@ -301,17 +300,8 @@ odoo.define('l10n_es_ticketbai_pos.models', function (require) {
             if (customer != null) {
                 ok = this.check_customer_country_code(customer);
                 if (ok) {
-                    country_code = this.pos.get_country_code_by_id(customer.country_id[0]);
-                    if ("ES" === country_code) {
-                        if (!customer.vat) {
-                            ok = false;
-                        }
-                    } else {
-                        if ("02" === customer.tbai_partner_idtype && !customer.vat) {
-                            ok = false;
-                        } else if ("02" !== customer.tbai_partner_idtype && !customer.tbai_partner_identification_number) {
-                            ok = false;
-                        }
+                    if (!customer.vat) {
+                        ok = false;
                     }
                 }
             }

@@ -114,6 +114,12 @@ odoo.define('l10n_es_ticketbai_pos.screens', function (require) {
                         title: _t('TicketBAI'),
                         body: _.str.sprintf(_t('Please set VAT or TicketBAI Partner Identification Number for customer %s.'), customer.name),
                     });
+                } else if (customer.tbai_partner_idtype != "02") {
+                    res = false;
+                    this.gui.show_popup('error', {
+                        title: _t('TicketBAI'),
+                        body: _t('Only NIF supported for spanish customers.'),
+                    });
                 }
             }
             if (res) {

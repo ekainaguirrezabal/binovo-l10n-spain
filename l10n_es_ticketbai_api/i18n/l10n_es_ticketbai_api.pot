@@ -1440,11 +1440,6 @@ msgid "TicketBAI Invoice Details"
 msgstr ""
 
 #. module: l10n_es_ticketbai_api
-#: model:ir.model.fields,field_description:l10n_es_ticketbai_api.field_tbai_invoice_tbai_customer_ids
-msgid "TicketBAI Invoice Recipients"
-msgstr ""
-
-#. module: l10n_es_ticketbai_api
 #: model:ir.model.fields,field_description:l10n_es_ticketbai_api.field_tbai_invoice_tbai_tax_ids
 msgid "TicketBAI Invoice Taxes"
 msgstr ""
@@ -1457,11 +1452,6 @@ msgstr ""
 #. module: l10n_es_ticketbai_api
 #: model:ir.model.fields,help:l10n_es_ticketbai_api.field_tbai_invoice_is_invoice_refund
 msgid "TicketBAI Invoice is a refund (Substitution or Differences)."
-msgstr ""
-
-#. module: l10n_es_ticketbai_api
-#: model:ir.model,name:l10n_es_ticketbai_api.model_tbai_invoice_customer
-msgid "TicketBAI Invoice recipients"
 msgstr ""
 
 #. module: l10n_es_ticketbai_api
