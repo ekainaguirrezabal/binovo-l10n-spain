@@ -78,6 +78,13 @@ msgid "Non spanish customers are not supported for Simplified Invoice."
 msgstr "Los clientes no nacionales no están soportados en factura simplificada."
 
 #. module: l10n_es_ticketbai_pos
+#. openerp-web
+#: code:addons/l10n_es_ticketbai_pos/static/src/js/screens.js:121
+#, python-format
+msgid "Only NIF supported for spanish customers."
+msgstr "Los clientes sin NIF no están soportados."
+
+#. module: l10n_es_ticketbai_pos
 #: model:ir.ui.view,arch_db:l10n_es_ticketbai_pos.view_pos_pos_form_inherit
 msgid "Orders"
 msgstr "Pedidos"
