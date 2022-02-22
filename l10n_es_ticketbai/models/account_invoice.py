@@ -157,6 +157,14 @@ class AccountInvoice(models.Model):
                     }
                 }
 
+    @api.onchange('refund_invoice_id')
+    def onchange_tbai_refund_invoice_id(self):
+        if self.refund_invoice_id:
+            if not self.tbai_refund_type:
+                self.tbai_refund_type = RefundType.differences.value
+            if not self.tbai_refund_key:
+                self.tbai_refund_key = RefundCode.R1.value
+
     def tbai_prepare_invoice_values(self):
 
         def tbai_prepare_refund_values():
