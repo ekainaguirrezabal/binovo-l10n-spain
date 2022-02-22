@@ -56,7 +56,7 @@ class ResPartner(models.Model):
 
     def get_identification_number(self):
         for partner in self:
-            if partner.tbai_partner_idtype == '02':
+            if partner.vat and partner.tbai_partner_idtype == '02':
                 nif_value = partner.tbai_get_value_nif()
                 if nif_value:
                     return nif_value

@@ -253,8 +253,8 @@ class TestL10nEsTicketBAIInvoice(TestL10nEsTicketBAIAPI):
 
     def test_invoice_irpf_taxes_send_to_tax_agency(self):
         if self.send_to_tax_agency:
-            #self._prepare_gipuzkoa_company(self.main_company)
-            #self._prepare_invoice_irpf_taxes_send_to_tax_agency()
+            self._prepare_gipuzkoa_company(self.main_company)
+            self._prepare_invoice_irpf_taxes_send_to_tax_agency()
             self._prepare_araba_company(self.main_company)
             self._prepare_invoice_irpf_taxes_send_to_tax_agency()
 
