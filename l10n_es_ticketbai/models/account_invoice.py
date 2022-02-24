@@ -200,7 +200,6 @@ class AccountInvoice(models.Model):
                     })
 
         self.ensure_one()
-        partner = self.partner_id
         vals = {
             'invoice_id': self.id,
             'schema': TicketBaiSchema.TicketBai.value,
@@ -212,16 +211,6 @@ class AccountInvoice(models.Model):
             'expedition_hour': self.tbai_get_value_hora_expedicion_factura(),
             'substitutes_simplified_invoice':
                 self.tbai_get_value_factura_emitida_sustitucion_simplificada(),
-            'tbai_customer_ids': [(0, 0, {
-                'name': partner.tbai_get_value_apellidos_nombre_razon_social(),
-                'country_code': partner.tbai_get_partner_country_code(),
-                'nif': partner.tbai_get_value_nif(),
-                'identification_number':
-                    partner.tbai_partner_identification_number or partner.vat,
-                'idtype': partner.tbai_partner_idtype,
-                'address': partner.tbai_get_value_direccion(),
-                'zip': partner.zip
-            })],
             'description': self.tbai_description_operation,
             'amount_total': "%.2f" % self.amount_total_company_signed,
             'vat_regime_key': self.tbai_vat_regime_key.code,
