@@ -67,6 +67,10 @@ class ResPartner(models.Model):
 
     def is_spanish_nif(self):
         self.ensure_one()
+        if not self.vat:
+            raise exceptions.ValidationError(_(
+                "TicketBAI Invoice %s: Identification Number is required!"
+            ) % (self.name))
         is_spanish = True
         if not self.country_id.code == CountryCode.ES.value:
             is_spanish = False

@@ -79,7 +79,7 @@ msgid "By substitution"
 msgstr ""
 
 #. module: l10n_es_ticketbai
-#: code:addons/l10n_es_ticketbai/models/account_invoice.py:298
+#: code:addons/l10n_es_ticketbai/models/account_invoice.py:288
 #, python-format
 msgid "Cancellation"
 msgstr ""
@@ -274,7 +274,7 @@ msgid "Invoice Tax"
 msgstr ""
 
 #. module: l10n_es_ticketbai
-#: code:addons/l10n_es_ticketbai/models/ticketbai_invoice.py:119
+#: code:addons/l10n_es_ticketbai/models/ticketbai_invoice.py:116
 #, python-format
 msgid "Invoice: number %s prefix %s invoice_date %s exists. Create a credit note from this invoice."
 msgstr ""
@@ -365,7 +365,7 @@ msgid "Origin Invoices Data"
 msgstr ""
 
 #. module: l10n_es_ticketbai
-#: code:addons/l10n_es_ticketbai/models/account_invoice.py:348
+#: code:addons/l10n_es_ticketbai/models/account_invoice.py:337
 #, python-format
 msgid "Please, specify data for the original invoices that are going to be refunded"
 msgstr ""
@@ -386,19 +386,19 @@ msgid "Refund"
 msgstr ""
 
 #. module: l10n_es_ticketbai
-#: code:addons/l10n_es_ticketbai/models/ticketbai_invoice.py:95
+#: code:addons/l10n_es_ticketbai/models/ticketbai_invoice.py:92
 #, python-format
 msgid "Refunded Invoice %s Expedition Date"
 msgstr ""
 
 #. module: l10n_es_ticketbai
-#: code:addons/l10n_es_ticketbai/models/ticketbai_invoice.py:86
+#: code:addons/l10n_es_ticketbai/models/ticketbai_invoice.py:83
 #, python-format
 msgid "Refunded Invoice %s Number Prefix %s longer than expected. Should be 20 characters max.!"
 msgstr ""
 
 #. module: l10n_es_ticketbai
-#: code:addons/l10n_es_ticketbai/models/ticketbai_invoice.py:76
+#: code:addons/l10n_es_ticketbai/models/ticketbai_invoice.py:73
 #, python-format
 msgid "Refunded Invoice Number %s longer than expected. Should be 20 characters max.!"
 msgstr ""
@@ -415,13 +415,13 @@ msgid "Software"
 msgstr ""
 
 #. module: l10n_es_ticketbai
-#: code:addons/l10n_es_ticketbai/models/account_invoice.py:362
+#: code:addons/l10n_es_ticketbai/models/account_invoice.py:351
 #, python-format
 msgid "Some of the original invoices have related tbai cancelled invoices"
 msgstr ""
 
 #. module: l10n_es_ticketbai
-#: code:addons/l10n_es_ticketbai/models/account_invoice.py:357
+#: code:addons/l10n_es_ticketbai/models/account_invoice.py:346
 #, python-format
 msgid "Some of the original invoices have related tbai invoices in inconsistent state please fix them beforehand."
 msgstr ""
@@ -707,14 +707,14 @@ msgid "Warning"
 msgstr ""
 
 #. module: l10n_es_ticketbai
-#: code:addons/l10n_es_ticketbai/models/account_invoice.py:329
+#: code:addons/l10n_es_ticketbai/models/account_invoice.py:318
 #, python-format
 msgid "You cannot cancel an invoice while being sent to the Tax Agency.\n"
 "Related invoices: %s"
 msgstr ""
 
 #. module: l10n_es_ticketbai
-#: code:addons/l10n_es_ticketbai/models/account_invoice.py:320
+#: code:addons/l10n_es_ticketbai/models/account_invoice.py:309
 #, python-format
 msgid "You cannot cancel an invoice with non cancelled credit notes.\n"
 "Related invoices: %s"
