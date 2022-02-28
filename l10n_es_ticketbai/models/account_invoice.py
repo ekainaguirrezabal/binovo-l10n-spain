@@ -496,7 +496,11 @@ class AccountInvoiceLine(models.Model):
                 sign = -1
             else:
                 sign = 1
-            res = "%.2f" % (sign * self.quantity * self.price_unit * self.discount / 100.0)
+            res = \
+                "%.2f" \
+                % \
+                (sign * self.quantity * self.price_unit *
+                 self.discount / 100.0)
         else:
             res = '0.00'
         return res
