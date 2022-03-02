@@ -272,18 +272,18 @@ class LROEOperationResponse(models.Model):
                     'xml': base64.encodebytes(xml_data),
                     'xml_fname': lroe_operation.name + '_response.xml'
                 })
-                xml_root = lroe_xml_schema.parse_xml(
-                    xml_data
-                )[lroe_xml_schema.root_element]
-                len_response_line_records, response_line_records =\
-                    get_lroe_response_xml_records()
-                response_line_ids = []
-                if len_response_line_records == 1:
-                    response_line_record = response_line_records
-                    set_tbai_response_lroe_line()
-                elif len_response_line_records > 1:
-                    for response_line_record in response_line_records:
+                xml_root = LROEXMLSchema.parse_xml(xml_data) or {}
+                if xml_root:
+                    xml_root = xml_root.get(next(iter(xml_root)))
+                    len_response_line_records, response_line_records =\
+                        get_lroe_response_xml_records()
+                    response_line_ids = []
+                    if len_response_line_records == 1:
+                        response_line_record = response_line_records
                         set_tbai_response_lroe_line()
+                    elif len_response_line_records > 1:
+                        for response_line_record in response_line_records:
+                            set_tbai_response_lroe_line()
             else:
                 tbai_response_model = tbai_response_obj = self.env['tbai.response']
                 if lroe_operation.tbai_invoice_ids:

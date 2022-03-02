@@ -200,13 +200,11 @@ class XMLSchema:
             self.create_node_from_dict(root, key, value)
         return root
 
-    def parse_xml(self, xml):
+    @staticmethod
+    def parse_xml(xml):
         """
         Parse TicketBAI response XML
         :param xml: XML string
         :return: OrderedDict
         """
-        namespaces = {
-            self.invoice_ns: None
-        }
-        return xmltodict.parse(xml, process_namespaces=True, namespaces=namespaces)
+        return xmltodict.parse(xml)

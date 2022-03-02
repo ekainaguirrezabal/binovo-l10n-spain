@@ -97,24 +97,38 @@ class TicketBaiResponse(models.Model):
         else:
             xml_dict = XMLSchema(
                 TicketBaiSchema.TicketBaiResponse.value).parse_xml(
-                response.data)['TicketBaiResponse'] or {}
-            state = xml_dict['Salida']['Estado']
-            values.update({
-                'xml': base64.encodebytes(response.data.encode('utf-8')),
-                'state': state
-            })
-            tbai_response_message_ids = []
-            if state == TicketBaiResponseState.RECEIVED.value:
-                if xml_dict.get('Salida').get('CSV'):
-                    tbai_response_message_ids.append((0, 0, {
-                        'code': xml_dict['Salida']['CSV'],
-                        'description': {
-                            'es_ES': xml_dict['Salida']['Descripcion'],
-                            'eu_ES': xml_dict['Salida']['Azalpena']
-                        }
-                    }))
-                messages = xml_dict.get('Salida').get('ResultadosValidacion', False)
-                if messages:
+                response.data) or {}
+            if xml_dict:
+                xml_dict = xml_dict.get(next(iter(xml_dict)))
+                state = xml_dict['Salida']['Estado']
+                values.update({
+                    'xml': base64.encodebytes(response.data.encode('utf-8')),
+                    'state': state
+                })
+                tbai_response_message_ids = []
+                if state == TicketBaiResponseState.RECEIVED.value:
+                    if xml_dict.get('Salida').get('CSV'):
+                        tbai_response_message_ids.append((0, 0, {
+                            'code': xml_dict['Salida']['CSV'],
+                            'description': {
+                                'es_ES': xml_dict['Salida']['Descripcion'],
+                                'eu_ES': xml_dict['Salida']['Azalpena']
+                            }
+                        }))
+                    messages = xml_dict.get('Salida').get('ResultadosValidacion', False)
+                    if messages:
+                        if isinstance(messages, dict):
+                            messages = [messages]
+                        for msg in messages:
+                            tbai_response_message_ids.append((0, 0, {
+                                'code': msg['Codigo'],
+                                'description': {
+                                    'es_ES': msg['Descripcion'],
+                                    'eu_ES': msg['Azalpena']
+                                }
+                            }))
+                elif state == TicketBaiResponseState.REJECTED.value:
+                    messages = xml_dict['Salida']['ResultadosValidacion']
                     if isinstance(messages, dict):
                         messages = [messages]
                     for msg in messages:
@@ -125,24 +139,12 @@ class TicketBaiResponse(models.Model):
                                 'eu_ES': msg['Azalpena']
                             }
                         }))
-            elif state == TicketBaiResponseState.REJECTED.value:
-                messages = xml_dict['Salida']['ResultadosValidacion']
-                if isinstance(messages, dict):
-                    messages = [messages]
-                for msg in messages:
+                else:
                     tbai_response_message_ids.append((0, 0, {
-                        'code': msg['Codigo'],
-                        'description': {
-                            'es_ES': msg['Descripcion'],
-                            'eu_ES': msg['Azalpena']
-                        }
+                        'code': state,
+                        'description': _('Unknown TicketBAI response code.')
                     }))
-            else:
-                tbai_response_message_ids.append((0, 0, {
-                    'code': state,
-                    'description': _('Unknown TicketBAI response code.')
-                }))
-            values.update(tbai_response_message_ids=tbai_response_message_ids)
+                values.update(tbai_response_message_ids=tbai_response_message_ids)
         return values
 
 
