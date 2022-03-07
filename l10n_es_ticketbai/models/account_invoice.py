@@ -9,7 +9,6 @@ from odoo.addons.l10n_es_ticketbai_api.models.ticketbai_invoice import RefundCod
     RefundType, SiNoType, TicketBaiInvoiceState
 from odoo.addons.l10n_es_ticketbai_api.ticketbai.xml_schema import TicketBaiSchema
 
-INVOICE_NUMBER_RE = re.compile(r'^(.*\D)?(\d*)$')
 
 
 class AccountInvoice(models.Model):
@@ -408,15 +407,25 @@ class AccountInvoice(models.Model):
             res = False
         return res
 
-    def split_invoice_number(self):
-        m = re.match(INVOICE_NUMBER_RE, self.number)
-        return m.group(1), m.group(2)
-
     def tbai_get_value_serie_factura(self):
-        return self.split_invoice_number()[0]
+        journal_id = self.move_id.journal_id
+        if self.type == 'out_refund' and journal_id.refund_sequence:
+            sequence = journal_id.refund_sequence_id
+        else:
+            sequence = journal_id.sequence_id
+        prefix = sequence.with_context(
+            ir_sequence_date=self.date_invoice,
+            ir_sequence_date_range=self.date_invoice)._get_prefix_suffix()[0]
+        return prefix
 
     def tbai_get_value_num_factura(self):
-        return self.split_invoice_number()[1]
+        invoice_prefix = self.tbai_get_value_serie_factura()
+        if invoice_prefix and not self.number.startswith(
+                invoice_prefix):
+            raise exceptions.ValidationError(_(
+                "Invoice Number Prefix %s is not part of Invoice Number %s!"
+            ) % (invoice_prefix, self.number))
+        return self.number[len(invoice_prefix):]
 
     def tbai_get_value_fecha_expedicion_factura(self):
         invoice_date = self.date or self.date_invoice
