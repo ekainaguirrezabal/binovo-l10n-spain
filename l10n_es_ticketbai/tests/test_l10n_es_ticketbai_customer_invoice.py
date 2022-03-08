@@ -30,35 +30,6 @@ class TestL10nEsTicketBAICustomerInvoice(TestL10nEsTicketBAI):
         res = XMLSchema.xml_is_valid(self.test_xml_invoice_schema_doc, root)
         self.assertTrue(res)
 
-    def test_invoice_sequence(self):
-        journal_id = self.env['account.journal'].search([
-            ('code', '=', 'INV'),
-            ('type', '=', 'sale')
-        ])
-        journal_id.sequence_id.prefix = 'TEST/%(range_year)s/'
-        invoice = self.create_draft_invoice(
-            self.account_billing.id, self.fiscal_position_national)
-        invoice.onchange_fiscal_position_id_tbai_vat_regime_key()
-        invoice.compute_taxes()
-        invoice.action_invoice_open()
-        invoice_serie = invoice.tbai_get_value_serie_factura()
-        invoice_num = invoice.tbai_get_value_num_factura()
-        self.assertEqual(invoice_serie, 'TEST/2022/')
-        self.assertEqual(invoice.number, invoice_serie + invoice_num)
-        self.assertEqual(invoice.state, 'open')
-
-        journal_id.sequence_id.prefix = 'TEST/%(range_year)s'
-        invoice = self.create_draft_invoice(
-            self.account_billing.id, self.fiscal_position_national)
-        invoice.onchange_fiscal_position_id_tbai_vat_regime_key()
-        invoice.compute_taxes()
-        invoice.action_invoice_open()
-        invoice_serie = invoice.tbai_get_value_serie_factura()
-        invoice_num = invoice.tbai_get_value_num_factura()
-        self.assertEqual(invoice_serie, 'TEST/2022')
-        self.assertEqual(invoice.number, invoice_serie + invoice_num)
-        self.assertEqual(invoice.state, 'open')
-
     def test_mark_as_error(self):
         # Build three invoices and check the errors.
         invoice = self.create_draft_invoice(

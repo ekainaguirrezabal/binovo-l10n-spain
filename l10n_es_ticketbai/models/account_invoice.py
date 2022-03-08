@@ -407,12 +407,21 @@ class AccountInvoice(models.Model):
             res = False
         return res
 
+    def _get_invoice_sequence(self):
+        journal_id = self.journal_id
+        if self.env['ir.module.module'].search([
+            ('name', '=', 'l10n_es_account_invoice_sequence'),
+            ('state', '=', 'installed')
+        ]) and journal_id.invoice_sequence_id:
+            sequence = journal_id.refund_inv_sequence_id \
+                if self.type == 'out_refund' else journal_id.invoice_sequence_id
+        else:  # pragma: no cover
+            sequence = journal_id.refund_sequence_id \
+                if self.type == 'out_refund' else journal_id.sequence_id
+        return sequence
+
     def tbai_get_value_serie_factura(self):
-        journal_id = self.move_id.journal_id
-        if self.type == 'out_refund' and journal_id.refund_sequence:
-            sequence = journal_id.refund_sequence_id
-        else:
-            sequence = journal_id.sequence_id
+        sequence = self._get_invoice_sequence()
         prefix = sequence.with_context(
             ir_sequence_date=self.date_invoice,
             ir_sequence_date_range=self.date_invoice)._get_prefix_suffix()[0]
@@ -421,7 +430,7 @@ class AccountInvoice(models.Model):
     def tbai_get_value_num_factura(self):
         invoice_prefix = self.tbai_get_value_serie_factura()
         if invoice_prefix and not self.number.startswith(
-                invoice_prefix):
+            invoice_prefix):
             raise exceptions.ValidationError(_(
                 "Invoice Number Prefix %s is not part of Invoice Number %s!"
             ) % (invoice_prefix, self.number))
