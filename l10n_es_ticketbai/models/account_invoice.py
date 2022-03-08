@@ -409,12 +409,10 @@ class AccountInvoice(models.Model):
 
     def _get_invoice_sequence(self):
         journal_id = self.journal_id
-        if self.env['ir.module.module'].search([
-            ('name', '=', 'l10n_es_account_invoice_sequence'),
-            ('state', '=', 'installed')
-        ]) and journal_id.invoice_sequence_id:
+        if 'invoice_sequence_id' in journal_id:
             sequence = journal_id.refund_inv_sequence_id \
-                if self.type == 'out_refund' else journal_id.invoice_sequence_id
+                if self.type == 'out_refund' and journal_id.refund_inv_sequence_id \
+                else journal_id.invoice_sequence_id
         else:  # pragma: no cover
             sequence = journal_id.refund_sequence_id \
                 if self.type == 'out_refund' else journal_id.sequence_id
