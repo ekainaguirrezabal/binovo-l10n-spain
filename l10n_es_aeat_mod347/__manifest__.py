@@ -5,13 +5,13 @@
 # Copyright 2016 Tecnativa - Antonio Espinosa
 # Copyright 2016 Tecnativa - Angel Moya <odoo@tecnativa.com>
 # Copyright 2018 PESOL - Angel Moya <info@pesol.es>
-# Copyright 2014-2020 Tecnativa - Pedro M. Baeza
+# Copyright 2014-2022 Tecnativa - Pedro M. Baeza
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 {
     'name': "AEAT modelo 347",
-    'version': "12.0.1.7.1",
-    'author': "Tecnativa,"
+    'version': "12.0.2.0.0",
+s    'author': "Tecnativa,"
               "PESOL,"
               "Odoo Community Association (OCA)",
     'website': "https://github.com/OCA/l10n-spain",
