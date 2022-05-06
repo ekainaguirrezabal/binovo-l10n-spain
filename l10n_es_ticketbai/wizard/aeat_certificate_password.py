@@ -26,4 +26,5 @@ class L10nEsAeatCertificatePassword(models.TransientModel):
             self.env.context.get('active_id'))
         file = base64.decodebytes(record.file)
         p12 = crypto.load_pkcs12(file, self.password)
-        record.tbai_p12_friendlyname = self._sanitize_p12_friendly_name(p12.get_friendlyname())
+        record.tbai_p12_friendlyname = \
+            self._sanitize_p12_friendly_name(p12.get_friendlyname())
