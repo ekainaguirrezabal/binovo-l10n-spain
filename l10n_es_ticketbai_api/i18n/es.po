@@ -121,7 +121,7 @@ msgstr ""
 "    "
 
 #. module: l10n_es_ticketbai_api
-#: code:addons/l10n_es_ticketbai_api/models/res_partner.py:166
+#: code:addons/l10n_es_ticketbai_api/models/res_partner.py:171
 #, python-format
 msgid "%s VAT Number"
 msgstr "%s NIF"
@@ -524,7 +524,7 @@ msgid "Identification Type Code"
 msgstr "Tipo de identificación"
 
 #. module: l10n_es_ticketbai_api
-#: code:addons/l10n_es_ticketbai_api/models/res_partner.py:135
+#: code:addons/l10n_es_ticketbai_api/models/res_partner.py:139
 #, python-format
 msgid "Incorrect country code."
 msgstr "Código de país incorrecto."
@@ -1145,7 +1145,7 @@ msgid "TicketBAI Installations"
 msgstr "TicketBAI Instalaciones"
 
 #. module: l10n_es_ticketbai_api
-#: code:addons/l10n_es_ticketbai_api/models/ticketbai_invoice.py:794
+#: code:addons/l10n_es_ticketbai_api/models/ticketbai_invoice.py:798
 #, python-format
 msgid ""
 "TicketBAI Invoice %s:\n"
@@ -1527,14 +1527,14 @@ msgid "TicketBAI Invoice %s: Line %s Quantity"
 msgstr "TicketBAI Factura %s: Línea %s cantidad"
 
 #. module: l10n_es_ticketbai_api
-#: code:addons/l10n_es_ticketbai_api/models/ticketbai_invoice.py:819
+#: code:addons/l10n_es_ticketbai_api/models/ticketbai_invoice.py:823
 #, python-format
 msgid "TicketBAI Invoice %s: Max. number of exempted taxes is 7!"
 msgstr ""
 "TicketBAI Factura %s: El número máximo permitido de impuestos exentos es 7."
 
 #. module: l10n_es_ticketbai_api
-#: code:addons/l10n_es_ticketbai_api/models/ticketbai_invoice.py:905
+#: code:addons/l10n_es_ticketbai_api/models/ticketbai_invoice.py:909
 #, python-format
 msgid "TicketBAI Invoice %s: Max. number of not subject to taxes is 2!"
 msgstr ""
