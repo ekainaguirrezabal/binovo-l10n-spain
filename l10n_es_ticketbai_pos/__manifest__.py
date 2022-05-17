@@ -18,7 +18,8 @@
     "depends": [
         "l10n_es_pos",
         "l10n_es_ticketbai",
-        "pos_order_mgmt"
+        "pos_order_mgmt",
+        "pos_order_return"
     ],
     "data": [
         "security/ir.model.access.csv",
