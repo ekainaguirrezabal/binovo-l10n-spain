@@ -772,8 +772,8 @@ class TicketBAIInvoice(models.Model):
         """
         self._check_vat_keys()
         res = {"IDClave": []}
-        res["IDClave"].append({"ClaveRegimenIvaOpTrascendencia":
-                                   self.vat_regime_key})
+        res["IDClave"].append(
+            {"ClaveRegimenIvaOpTrascendencia": self.vat_regime_key})
         if self.vat_regime_key2:
             res["IDClave"].append(
                 {"ClaveRegimenIvaOpTrascendencia": self.vat_regime_key2})

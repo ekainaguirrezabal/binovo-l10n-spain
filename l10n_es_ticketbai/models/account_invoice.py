@@ -170,9 +170,10 @@ class AccountInvoice(models.Model):
             self.env.ref("l10n_es_ticketbai.tbai_vat_regime_51").id,
             self.env.ref("l10n_es_ticketbai.tbai_vat_regime_52").id
         ]:
-            self.tbai_vat_regime_key = self.company_id.tbai_vat_regime.id if self.has_surcharge_lines or len(
-                self.invoice_line_ids) == 0 else self.env.ref(
-                    "l10n_es_ticketbai.tbai_vat_regime_01").id
+            self.tbai_vat_regime_key =\
+                self.company_id.tbai_vat_regime.id if self.has_surcharge_lines or\
+                len(self.invoice_line_ids) == 0 else \
+                self.env.ref("l10n_es_ticketbai.tbai_vat_regime_01").id
 
     @api.onchange('tbai_refund_type')
     def onchange_tbai_refund_type(self):
