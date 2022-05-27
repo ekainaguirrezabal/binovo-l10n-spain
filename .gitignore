@@ -1,7 +1,6 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
-
 # C extensions
 *.so
 
@@ -58,3 +57,7 @@ docs/_build/
 # Backup files
 *~
 *.swp
+
+# MACOS
+.DS_Store
+
